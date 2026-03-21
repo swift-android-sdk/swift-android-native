@@ -99,12 +99,13 @@ public class AndroidBootstrap {
         // -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- sections,
         // so we can naïvely concatenate them all and libcurl will understand the bundle.
         var pemData = Data()
-        pemData.append("""
-        ## Bundle of CA Root Certificates
-        ## Auto-generated on \(Date())
-        ## by aggregating certificates from: \(certsFolders)
+        pemData.append(
+            """
+            ## Bundle of CA Root Certificates
+            ## Auto-generated on \(Date())
+            ## by aggregating certificates from: \(certsFolders)
 
-        """.data(using: .utf8)!)
+            """.data(using: .utf8)!)
         for certURL in certURLs {
             pemData.append(try Data(contentsOf: certURL))
         }
