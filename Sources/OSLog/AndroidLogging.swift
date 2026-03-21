@@ -1,7 +1,7 @@
 // Copyright 2025 Skip
 #if os(Android)
 import Android
-import AndroidNDK
+import CAndroidNDK
 #endif
 
 #if canImport(os)

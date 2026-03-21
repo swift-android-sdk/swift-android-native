@@ -8,9 +8,9 @@ let android = Context.environment["TARGET_OS_ANDROID"] ?? "0" != "0"
 // Override JNI package
 let swiftJavaJNICoreDep: Package.Dependency
 if let localPath = Context.environment["SWIFT_JAVA_JNI_CORE_PATH"] {
-  swiftJavaJNICoreDep = .package(path: localPath)
+    swiftJavaJNICoreDep = .package(path: localPath)
 } else {
-  swiftJavaJNICoreDep = .package(url: "https://github.com/swiftlang/swift-java-jni-core", from: "0.3.0")
+    swiftJavaJNICoreDep = .package(url: "https://github.com/swiftlang/swift-java-jni-core", from: "0.3.0")
 }
 
 // Get NDK version from command line
@@ -45,13 +45,13 @@ let package = Package(
         swiftJavaJNICoreDep
     ],
     targets: [
-        .target(name: "AndroidNDK", linkerSettings: [
+        .target(name: "CAndroidNDK", linkerSettings: [
             .linkedLibrary("android", .when(platforms: [.android])),
             .linkedLibrary("log", .when(platforms: [.android])),
         ]),
         .target(name: "ConcurrencyRuntimeC"),
         .target(name: "AndroidSystem", dependencies: [
-            .target(name: "AndroidNDK", condition: .when(platforms: [.android]))
+            .target(name: "CAndroidNDK", condition: .when(platforms: [.android]))
         ], swiftSettings: [
             .define("SYSTEM_PACKAGE_DARWIN", .when(platforms: [.macOS, .macCatalyst, .iOS, .watchOS, .tvOS, .visionOS])),
             .define("SYSTEM_PACKAGE"),
@@ -61,7 +61,7 @@ let package = Package(
         ]),
         .target(name: "AndroidAssetManager", dependencies: [
             .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
-            .target(name: "AndroidNDK", condition: .when(platforms: [.android])),
+            .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
         ]),
         .testTarget(name: "AndroidAssetManagerTests", dependencies: [
             "AndroidAssetManager",
@@ -93,9 +93,9 @@ let package = Package(
                 "CAndroidNDK"
             ],
             swiftSettings: [
-              //.swiftLanguageMode(.v6),
-              ndkVersionDefine,
-              sdkVersionDefine
+                //.swiftLanguageMode(.v6),
+                ndkVersionDefine,
+                sdkVersionDefine
             ],
             linkerSettings: [
                 .linkedLibrary("android", .when(platforms: [.android]))
@@ -120,4 +120,3 @@ if android {
     package.targets += [.target(name: "OSLog", dependencies: ["AndroidLogging"])]
     package.targets.first(where: { $0.name == "AndroidLoggingTests" })?.dependencies += [.target(name: "OSLog")]
 }
-
