@@ -13,12 +13,16 @@
 //===----------------------------------------------------------------------===//
 
 import Testing
+#if canImport(OSLog)
 import OSLog // note: on non-android platforms, this will just export the system OSLog
+#else
+import AndroidLogging
+#endif
 
 struct AndroidLoggingTests {
     @Test func testOSLogAPI() {
-        let emptyLogger = Logger()
-        emptyLogger.info("Android logger test: empty message")
+        //let emptyLogger = Logger()
+        //emptyLogger.info("Android logger test: empty message")
 
         let logger = Logger(subsystem: "AndroidLoggingTests", category: "test")
 

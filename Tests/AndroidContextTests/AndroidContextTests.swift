@@ -14,6 +14,7 @@
 
 import Testing
 import AndroidContext
+import AndroidAssetManager
 import SwiftJavaJNICore
 #if os(Android)
 import AndroidNDK
@@ -21,8 +22,6 @@ import AndroidNDK
 
 #if !os(iOS)
 struct AndroidContextTests {
-    // TODO: activate these tests now that we have `skip android test --apk` and can access the JNI context
-    @Test(.disabled("this test is only for demo purposes"))
     func testAndroidContext() throws {
         #if os(Android)
         let nativeActivity: ANativeActivity! = nil

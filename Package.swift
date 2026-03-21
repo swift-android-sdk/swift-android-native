@@ -49,6 +49,7 @@ let package = Package(
     ],
     products: [
         .library(name: "AndroidNative", targets: ["AndroidNative"]),
+        .library(name: "AndroidContext", targets: ["AndroidContext"]),
         .library(name: "AndroidAssetManager", targets: ["AndroidAssetManager"]),
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
@@ -89,6 +90,17 @@ let package = Package(
             name: "AndroidAssetManagerTests",
             dependencies: [
                 "AndroidAssetManager"
+            ]),
+        .target(
+            name: "AndroidContext",
+            dependencies: [
+                "AndroidAssetManager",
+                .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
+            ]),
+        .testTarget(
+            name: "AndroidContextTests",
+            dependencies: [
+                "AndroidContext"
             ]),
         .target(
             name: "AndroidLogging",
