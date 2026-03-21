@@ -22,7 +22,7 @@ jobs:
         swift: ['nightly-6.3']
 
         # android-api: ['28', '36']
-        android-api: ['28']
+        android-api: ['30']
 
         android-ndk: ['r27d', 'r30-beta1']
         # android-ndk: ['r27d']
