@@ -73,7 +73,7 @@ public extension AssetManager {
     /// Opens a directory for iteration over its asset file names.
     ///
     /// - Parameter path: Relative path under the APK `assets/` directory. Pass `""` for the root.
-    func openDirectory(_ path: String) throws(AndroidFileManagerError) -> AssetDirectory {
+    func openDirectory(_ path: String = "") throws(AndroidFileManagerError) -> AssetDirectory {
         guard let pointer = path.withCString({
             AAssetManager_openDir(pointer, $0)
         }) else {
