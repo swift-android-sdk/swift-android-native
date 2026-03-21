@@ -64,34 +64,56 @@ public extension Asset {
         case end = 2
     }
 
-    /// Reads up to `maxCount` bytes from the current cursor position.
-    func read(maxCount: Int = 4096) throws(AndroidFileManagerError) -> [UInt8] {
-        guard maxCount > 0 else { return [] }
-        var bytes = [UInt8](repeating: 0, count: maxCount)
-        let count = bytes.withUnsafeMutableBytes {
-            AAsset_read(pointer, $0.baseAddress, maxCount)
+    /// Reads up to `maxCount` bytes from the current cursor position,
+    /// then calls `body` with a ``RawSpan`` over the bytes read.
+    ///
+    /// The span is only valid for the duration of the call; do not escape it.
+    func read<E: Error, T>(
+        maxCount: Int = 4096,
+        _ body: (RawSpan) throws(E) -> T
+    ) throws -> T {
+        var bytes = [UInt8](repeating: 0, count: max(maxCount, 0))
+        let count: Int32
+        if maxCount > 0 {
+            count = bytes.withUnsafeMutableBytes {
+                AAsset_read(pointer, $0.baseAddress, maxCount)
+            }
+            guard count >= 0 else { throw AndroidFileManagerError.readAsset(count) }
+        } else {
+            count = 0
         }
-        guard count >= 0 else { throw .readAsset(count) }
-        bytes.removeSubrange(Int(count)...)
-        return bytes
+        return try bytes.withUnsafeBytes {
+            try body(UnsafeRawBufferPointer(rebasing: $0.prefix(Int(count))).bytes)
+        }
     }
 
-    /// Reads and returns all remaining bytes.
-    func readAll(chunkSize: Int = 4096) throws(AndroidFileManagerError) -> [UInt8] {
-        guard chunkSize > 0 else { return [] }
-        // Fast path: asset is backed by a contiguous buffer — single copy.
-        if let bytes = withUnsafeBufferPointer({ Array($0) }) {
-            return bytes
+    /// Reads all remaining bytes, then calls `body` with a ``RawSpan`` over them.
+    ///
+    /// The span is only valid for the duration of the call; do not escape it.
+    func readAll<E: Error, T>(
+        chunkSize: Int = 4096,
+        _ body: (RawSpan) throws(E) -> T
+    ) throws -> T {
+        // Fast path: asset is backed by a contiguous buffer — zero allocation.
+        if let result = try withRawSpan({ try body($0) }) {
+            return result
         }
-        // Slow path: chunked reads.
+        // Slow path: accumulate chunks, then hand span over the full buffer.
+        guard chunkSize > 0 else {
+            return try body(UnsafeRawBufferPointer(start: nil, count: 0).bytes)
+        }
         var output = [UInt8]()
         output.reserveCapacity(Int(max(remainingLength, 0)))
+        var chunk = [UInt8](repeating: 0, count: chunkSize)
         while true {
-            let chunk = try read(maxCount: chunkSize)
-            if chunk.isEmpty { break }
-            output.append(contentsOf: chunk)
+            let count = chunk.withUnsafeMutableBytes {
+                AAsset_read(pointer, $0.baseAddress, chunkSize)
+            }
+            guard count >= 0 else { throw AndroidFileManagerError.readAsset(count) }
+            if count == 0 { break }
+            output.append(contentsOf: chunk.prefix(Int(count)))
         }
-        return output
+        return try output.withUnsafeBytes { try body($0.bytes) }
     }
 
     /// Seeks the asset cursor and returns the new absolute position.
