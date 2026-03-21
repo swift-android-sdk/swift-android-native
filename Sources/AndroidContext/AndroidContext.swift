@@ -91,8 +91,18 @@ public class AndroidContext: @unchecked Sendable {
     /// Obtain the global application context by checking whether the static `contextPointer` is set,
     /// and if not, using the `contextFactory` string to reflectively look up the global context.
     private static let applicationContext: Result<AndroidContext, AndroidContextError> = {
-        let jvm: JavaVirtualMachine = try JavaVirtualMachine.shared()
-        let env: JNIEnvironment = try jvm.environment()
+        let jvm: JavaVirtualMachine
+        let env: JNIEnvironment
+        do {
+            jvm = try JavaVirtualMachine.shared()
+            env = try jvm.environment()
+        }
+        catch let error as JavaVirtualMachine.VMError {
+            return .failure(.virtualMachine(error))
+        }
+        catch {
+            fatalError("Non-JavaVirtualMachine.VMError error thrown")
+        }
         let jni: JNINativeInterface = env.pointee!.pointee
 
         // if we have provided a manual context jobject, then we just use that and skip trying to access the factory
@@ -111,7 +121,7 @@ public class AndroidContext: @unchecked Sendable {
         // get the second part of the contextFactory parameter: currentApplication()Landroid/app/Application;
         let contextFunctionParts = contextRemainder.split(separator: "(")
         if contextFunctionParts.count != 2 {
-            return .failure(.invalidJavaSignature(contextFactory))
+            return .failure(.invalidSignature(contextFactory))
         }
 
         let contextMethod = "" + contextFunctionParts[0]
