@@ -1,4 +1,17 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.0
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the SwiftAndroidNative open source project
+//
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
+//
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
 import PackageDescription
 import class Foundation.FileManager
 import class Foundation.ProcessInfo
@@ -32,7 +45,7 @@ let package = Package(
         .tvOS(.v17),
         .watchOS(.v10),
         .macCatalyst(.v17),
-        .visionOS(.v1)
+        .visionOS(.v1),
     ],
     products: [
         .library(name: "AndroidNative", targets: ["AndroidNative"]),
@@ -40,78 +53,90 @@ let package = Package(
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
         .library(name: "AndroidChoreographer", targets: ["AndroidChoreographer"]),
-        .library(name: "AndroidManifest", targets: ["AndroidManifest"]),
     ],
     dependencies: [
         swiftJavaJNICoreDep
     ],
     targets: [
-        .target(name: "CAndroidNDK", linkerSettings: [
-            .linkedLibrary("android", .when(platforms: [.android])),
-            .linkedLibrary("log", .when(platforms: [.android])),
-        ]),
-        .target(name: "ConcurrencyRuntimeC"),
-        .target(name: "AndroidSystem", dependencies: [
-            .target(name: "CAndroidNDK", condition: .when(platforms: [.android]))
-        ], swiftSettings: [
-            .define("SYSTEM_PACKAGE_DARWIN", .when(platforms: [.macOS, .macCatalyst, .iOS, .watchOS, .tvOS, .visionOS])),
-            .define("SYSTEM_PACKAGE"),
-        ]),
-        .testTarget(name: "AndroidSystemTests", dependencies: [
-            "AndroidSystem",
-        ]),
-        .target(name: "AndroidAssetManager", dependencies: [
-            .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
-            .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
-        ]),
-        .testTarget(name: "AndroidAssetManagerTests", dependencies: [
-            "AndroidAssetManager",
-        ]),
-        .target(name: "AndroidLogging", dependencies: [
-            "AndroidSystem"
-        ]),
-        .testTarget(name: "AndroidLoggingTests", dependencies: [
-            "AndroidLogging"
-        ]),
-        .target(name: "AndroidLooper", dependencies: [
-            "AndroidSystem",
-            "AndroidLogging",
-            "ConcurrencyRuntimeC",
-        ]),
-        .testTarget(name: "AndroidLooperTests", dependencies: [
-            "AndroidLooper",
-        ]),
-        .target(name: "AndroidChoreographer", dependencies: [
-            "AndroidSystem",
-            "AndroidLogging",
-        ]),
-        .testTarget(name: "AndroidChoreographerTests", dependencies: [
-            "AndroidChoreographer",
-        ]),
         .target(
-            name: "AndroidManifest",
+            name: "AndroidNDK",
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android])),
+                .linkedLibrary("log", .when(platforms: [.android])),
+            ]),
+        .target(name: "ConcurrencyRuntimeC"),
+        .target(
+            name: "AndroidSystem",
             dependencies: [
-                "CAndroidNDK"
+                .target(name: "AndroidNDK", condition: .when(platforms: [.android]))
             ],
             swiftSettings: [
-                //.swiftLanguageMode(.v6),
-                ndkVersionDefine,
-                sdkVersionDefine
-            ],
-            linkerSettings: [
-                .linkedLibrary("android", .when(platforms: [.android]))
-            ]
-        ),
-        .target(name: "AndroidNative", dependencies: [
-            .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
-            "AndroidAssetManager",
-            "AndroidLogging",
-            "AndroidLooper",
-            "AndroidChoreographer",
-        ]),
-        .testTarget(name: "AndroidNativeTests", dependencies: [
-            "AndroidNative",
-        ], resources: [.embedInCode("Resources/sample_resource.txt")]),
+                .define("SYSTEM_PACKAGE_DARWIN", .when(platforms: [.macOS, .macCatalyst, .iOS, .watchOS, .tvOS, .visionOS])),
+                .define("SYSTEM_PACKAGE"),
+            ]),
+        .testTarget(
+            name: "AndroidSystemTests",
+            dependencies: [
+                "AndroidSystem"
+            ]),
+        .target(
+            name: "AndroidAssetManager",
+            dependencies: [
+                .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
+                .target(name: "AndroidNDK", condition: .when(platforms: [.android])),
+            ]),
+        .testTarget(
+            name: "AndroidAssetManagerTests",
+            dependencies: [
+                "AndroidAssetManager"
+            ]),
+        .target(
+            name: "AndroidLogging",
+            dependencies: [
+                "AndroidSystem"
+            ]),
+        .testTarget(
+            name: "AndroidLoggingTests",
+            dependencies: [
+                "AndroidLogging"
+            ]),
+        .target(
+            name: "AndroidLooper",
+            dependencies: [
+                "AndroidSystem",
+                "AndroidLogging",
+                "ConcurrencyRuntimeC",
+            ]),
+        .testTarget(
+            name: "AndroidLooperTests",
+            dependencies: [
+                "AndroidLooper"
+            ]),
+        .target(
+            name: "AndroidChoreographer",
+            dependencies: [
+                "AndroidSystem",
+                "AndroidLogging",
+            ]),
+        .testTarget(
+            name: "AndroidChoreographerTests",
+            dependencies: [
+                "AndroidChoreographer"
+            ]),
+        .target(
+            name: "AndroidNative",
+            dependencies: [
+                .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
+                "AndroidAssetManager",
+                "AndroidLogging",
+                "AndroidLooper",
+                "AndroidChoreographer",
+            ]),
+        .testTarget(
+            name: "AndroidNativeTests",
+            dependencies: [
+                "AndroidNative"
+            ], resources: [.embedInCode("Resources/sample_resource.txt")]),
     ]
     //swiftLanguageModes: [.v5]
 )

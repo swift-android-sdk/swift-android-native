@@ -1,9 +1,16 @@
+//===----------------------------------------------------------------------===//
 //
-//  LogPriority.swift
-//  SwiftAndroid
+// This source file is part of the SwiftAndroidNative open source project
 //
-//  Created by Alsey Coleman Miller on 6/14/25.
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
 //
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
 
 #if canImport(Android)
 import Android
@@ -11,60 +18,60 @@ import Android
 
 /// Android Log Priority
 public enum LogPriority: Equatable, Hashable, CaseIterable, Sendable {
-    
+
     /**
      Debug logging.
-
+    
      Should typically be disabled for a release apk.
      */
     case debug
-    
+
     /**
      The default priority, for internal use only.
      */
     case `default`
-    
+
     /**
      Error logging.
-
+    
      For use with unrecoverable failures.
      */
     case error
-    
+
     /**
      Fatal logging.
-
+    
      For use when aborting.
      */
     case fatal
-    
+
     /**
      Informational logging.
-
+    
      Should typically be disabled for a release apk.
      */
     case info
-    
+
     /**
      For internal use only.
      */
     case silent
-    
+
     /**
      For internal use only.
      */
     case unknown
-    
+
     /**
      Verbose logging.
-
+    
      Should typically be disabled for a release apk.
      */
     case verbose
-    
+
     /**
      Warning logging.
-
+    
      For use with recoverable failures.
      */
     case warning
@@ -74,7 +81,7 @@ public enum LogPriority: Equatable, Hashable, CaseIterable, Sendable {
 internal typealias CLogPriority = android_LogPriority
 
 internal extension CLogPriority {
-    
+
     init(_ priority: LogPriority) {
         switch priority {
         case .debug:
@@ -100,16 +107,16 @@ internal extension CLogPriority {
 }
 #else
 internal struct CLogPriority: RawRepresentable, Equatable, Hashable, Sendable {
-    
+
     public var rawValue: CInt
-    
+
     public init(rawValue: CInt) {
         self.rawValue = rawValue
     }
 }
 
 internal extension CLogPriority {
-    
+
     init(_ priority: LogPriority) {
         fatalError("shim")
     }

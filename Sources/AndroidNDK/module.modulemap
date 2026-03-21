@@ -1,4 +1,4 @@
-module CAndroidNDK [system] {
+module AndroidNDK [system] {
   link "log"
   header "ndk.h"
   export *
