@@ -134,16 +134,16 @@ public class AndroidContext: @unchecked Sendable {
     })
 
     /// The `AndroidAssetManager` for this context
-    public private(set) lazy var assetManager: AndroidAssetManager = {
+    public var assetManager: AssetManager {
         let jni: JNINativeInterface = env.pointee!.pointee
 
         // Call context.getAssets() to get the Java AssetManager
         let contextClass: jclass = jni.GetObjectClass(env, pointer)!
         let getAssetsID: jmethodID = jni.GetMethodID(env, contextClass, "getAssets", "()Landroid/content/res/AssetManager;")!
         let assetManagerObj: jobject = jni.CallObjectMethodA(env, pointer, getAssetsID, [])!
-
-        return AndroidAssetManager(env: env, peer: assetManagerObj)
-    }()
+        
+        return AssetManager.fromJava(assetManagerObj, environment: env)!
+    }
 
     /// Returns the package name for the current context
     public func getPackageName() throws -> String? {
