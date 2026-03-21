@@ -1,4 +1,17 @@
-// Copyright 2025 Skip
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the SwiftAndroidNative open source project
+//
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
+//
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
+
 @_exported import SwiftJavaJNICore
 @_exported import AndroidAssetManager
 @_exported import AndroidLogging
@@ -86,12 +99,13 @@ public class AndroidBootstrap {
         // -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- sections,
         // so we can naïvely concatenate them all and libcurl will understand the bundle.
         var pemData = Data()
-        pemData.append("""
-        ## Bundle of CA Root Certificates
-        ## Auto-generated on \(Date())
-        ## by aggregating certificates from: \(certsFolders)
+        pemData.append(
+            """
+            ## Bundle of CA Root Certificates
+            ## Auto-generated on \(Date())
+            ## by aggregating certificates from: \(certsFolders)
 
-        """.data(using: .utf8)!)
+            """.data(using: .utf8)!)
         for certURL in certURLs {
             pemData.append(try Data(contentsOf: certURL))
         }
@@ -118,4 +132,3 @@ public class AndroidBootstrap {
     }
 }
 #endif
-

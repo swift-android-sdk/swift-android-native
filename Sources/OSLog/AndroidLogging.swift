@@ -1,7 +1,20 @@
-// Copyright 2025 Skip
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the SwiftAndroidNative open source project
+//
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
+//
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
+
 #if os(Android)
 import Android
-import CAndroidNDK
+import AndroidNDK
 #endif
 
 #if canImport(os)
@@ -12,7 +25,7 @@ import AndroidLogging
 public typealias OSLogMessage = String
 
 /// https://developer.android.com/ndk/reference/group/logging
-public struct Logger : Sendable {
+public struct Logger: Sendable {
 
     public let subsystem: String
     public let category: String
@@ -88,11 +101,11 @@ public struct OSLogType: Equatable, Hashable, RawRepresentable, Sendable {
 }
 
 extension OSLogType {
-    public static var `default`: OSLogType  { OSLogType(0x00) }
-    public static var info: OSLogType       { OSLogType(0x01) }
-    public static var debug: OSLogType      { OSLogType(0x02) }
-    public static var error: OSLogType      { OSLogType(0x10) }
-    public static var fault: OSLogType      { OSLogType(0x11) }
+    public static var `default`: OSLogType { OSLogType(0x00) }
+    public static var info: OSLogType { OSLogType(0x01) }
+    public static var debug: OSLogType { OSLogType(0x02) }
+    public static var error: OSLogType { OSLogType(0x10) }
+    public static var fault: OSLogType { OSLogType(0x11) }
 }
 
 internal extension LogPriority {

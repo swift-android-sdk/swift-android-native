@@ -1,4 +1,17 @@
-// Copyright 2025 Skip
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the SwiftAndroidNative open source project
+//
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
+//
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
+
 #if canImport(FoundationEssentials)
 import FoundationEssentials
 #else
@@ -6,7 +19,7 @@ import Foundation
 #endif
 #if os(Android)
 import Android
-import CAndroidNDK
+import AndroidNDK
 #endif
 import SwiftJavaJNICore
 
@@ -15,10 +28,10 @@ import SwiftJavaJNICore
 @available(iOS, unavailable)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
-public final class AndroidAssetManager : @unchecked Sendable {
+public final class AndroidAssetManager: @unchecked Sendable {
     let assetManager: OpaquePointer // AAssetManager
     typealias AssetHandle = OpaquePointer
-    
+
     /// Create the asset manager from the given JNI environment with a jobject pointer to the Java AssetManager.
     public init(env: UnsafeMutablePointer<JNIEnv?>, peer: jobject) {
         #if !os(Android)
@@ -123,7 +136,7 @@ public final class AndroidAssetManager : @unchecked Sendable {
             let len = size ?? Int(self.length)
             var data = Data(count: len)
 
-            let bytesRead: Int32 = try data.withUnsafeMutableBytes { buffer in
+            let bytesRead: Int32 = data.withUnsafeMutableBytes { buffer in
                 #if !os(Android)
                 fatalError("only implemented for Android")
                 #else
