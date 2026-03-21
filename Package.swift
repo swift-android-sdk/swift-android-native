@@ -1,4 +1,17 @@
 // swift-tools-version: 5.9
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the SwiftAndroidNative open source project
+//
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
+//
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
 import PackageDescription
 import class Foundation.FileManager
 import class Foundation.ProcessInfo
@@ -45,10 +58,12 @@ let package = Package(
         swiftJavaJNICoreDep
     ],
     targets: [
-        .target(name: "AndroidNDK", linkerSettings: [
-            .linkedLibrary("android", .when(platforms: [.android])),
-            .linkedLibrary("log", .when(platforms: [.android])),
-        ]),
+        .target(
+            name: "AndroidNDK",
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android])),
+                .linkedLibrary("log", .when(platforms: [.android])),
+            ]),
         .target(name: "ConcurrencyRuntimeC"),
         .target(name: "AndroidSystem", dependencies: [
             .target(name: "AndroidNDK", condition: .when(platforms: [.android]))
@@ -106,4 +121,3 @@ if android {
     package.targets += [.target(name: "OSLog", dependencies: ["AndroidLogging"])]
     package.targets.first(where: { $0.name == "AndroidLoggingTests" })?.dependencies += [.target(name: "OSLog")]
 }
-
