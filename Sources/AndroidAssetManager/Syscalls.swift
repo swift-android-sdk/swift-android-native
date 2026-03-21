@@ -85,6 +85,19 @@ func AAssetManager_open(
     _ mode: Int32
 ) -> OpaquePointer? { stub() }
 
+func AAssetManager_openDir(
+    _ manager: OpaquePointer,
+    _ dirName: UnsafePointer<CChar>?
+) -> OpaquePointer? { stub() }
+
+// MARK: - AAssetDir
+
+func AAssetDir_getNextFileName(_ assetDir: OpaquePointer) -> UnsafePointer<CChar>? { stub() }
+
+func AAssetDir_rewind(_ assetDir: OpaquePointer) { stub() }
+
+func AAssetDir_close(_ assetDir: OpaquePointer) { stub() }
+
 // MARK: - AAsset
 
 func AAsset_close(_ asset: OpaquePointer) { stub() }
