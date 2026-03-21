@@ -65,12 +65,10 @@ public extension Asset {
     }
 
     /// Reads up to `maxCount` bytes from the current cursor position,
-    /// then calls `body` with a ``RawSpan`` over the bytes read.
-    ///
-    /// The span is only valid for the duration of the call; do not escape it.
+    /// then calls `body` with an ``UnsafeRawBufferPointer`` over the bytes read.
     func read<E: Error, T>(
         maxCount: Int = 4096,
-        _ body: (RawSpan) throws(E) -> T
+        _ body: (UnsafeRawBufferPointer) throws(E) -> T
     ) throws -> T {
         var bytes = [UInt8](repeating: 0, count: max(maxCount, 0))
         let count: Int32
@@ -83,24 +81,33 @@ public extension Asset {
             count = 0
         }
         return try bytes.withUnsafeBytes {
-            try body(UnsafeRawBufferPointer(rebasing: $0.prefix(Int(count))).bytes)
+            try body(UnsafeRawBufferPointer(rebasing: $0.prefix(Int(count))))
         }
     }
 
-    /// Reads all remaining bytes, then calls `body` with a ``RawSpan`` over them.
+    /// Reads up to `maxCount` bytes from the current cursor position,
+    /// then calls `body` with a ``RawSpan`` over the bytes read.
     ///
     /// The span is only valid for the duration of the call; do not escape it.
-    func readAll<E: Error, T>(
-        chunkSize: Int = 4096,
+    func read<E: Error, T>(
+        maxCount: Int = 4096,
         _ body: (RawSpan) throws(E) -> T
     ) throws -> T {
+        try read(maxCount: maxCount) { (buf: UnsafeRawBufferPointer) in try body(buf.bytes) }
+    }
+
+    /// Reads all remaining bytes, then calls `body` with an ``UnsafeRawBufferPointer`` over them.
+    func readAll<E: Error, T>(
+        chunkSize: Int = 4096,
+        _ body: (UnsafeRawBufferPointer) throws(E) -> T
+    ) throws -> T {
         // Fast path: asset is backed by a contiguous buffer — zero allocation.
-        if let result = try withRawSpan({ try body($0) }) {
+        if let result = try withUnsafeBufferPointer({ try body($0) }) {
             return result
         }
-        // Slow path: accumulate chunks, then hand span over the full buffer.
+        // Slow path: accumulate chunks, then hand buffer to body.
         guard chunkSize > 0 else {
-            return try body(UnsafeRawBufferPointer(start: nil, count: 0).bytes)
+            return try body(UnsafeRawBufferPointer(start: nil, count: 0))
         }
         var output = [UInt8]()
         output.reserveCapacity(Int(max(remainingLength, 0)))
@@ -113,7 +120,17 @@ public extension Asset {
             if count == 0 { break }
             output.append(contentsOf: chunk.prefix(Int(count)))
         }
-        return try output.withUnsafeBytes { try body($0.bytes) }
+        return try output.withUnsafeBytes { try body($0) }
+    }
+
+    /// Reads all remaining bytes, then calls `body` with a ``RawSpan`` over them.
+    ///
+    /// The span is only valid for the duration of the call; do not escape it.
+    func readAll<E: Error, T>(
+        chunkSize: Int = 4096,
+        _ body: (RawSpan) throws(E) -> T
+    ) throws -> T {
+        try readAll(chunkSize: chunkSize) { (buf: UnsafeRawBufferPointer) in try body(buf.bytes) }
     }
 
     /// Seeks the asset cursor and returns the new absolute position.
