@@ -627,3 +627,33 @@ internal var _SEEK_HOLE: CInt { SEEK_HOLE }
 @_alwaysEmitIntoClient
 internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
+
+#if os(Linux) || os(Android)
+@_alwaysEmitIntoClient
+internal var _EFD_CLOEXEC: CInt { numericCast(EFD_CLOEXEC) }
+
+@_alwaysEmitIntoClient
+internal var _EFD_NONBLOCK: CInt { numericCast(EFD_NONBLOCK) }
+
+@_alwaysEmitIntoClient
+internal var _EFD_SEMAPHORE: CInt { numericCast(EFD_SEMAPHORE) }
+#endif
+
+@_alwaysEmitIntoClient
+internal var _fd_set_count: Int {
+#if canImport(Darwin)
+    // __DARWIN_FD_SETSIZE is number of *bits*, so divide by number bits in each element to get element count
+    // at present this is 1024 / 32 == 32
+    return Int(__DARWIN_FD_SETSIZE) / 32
+#elseif os(Linux) || os(FreeBSD) || os(Android)
+#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
+    return 32
+#elseif arch(i386) || arch(arm)
+    return 16
+#else
+#error("This architecture isn't known. Add it to the 32-bit or 64-bit line.")
+#endif
+#elseif os(Windows)
+    return 32
+#endif
+}
