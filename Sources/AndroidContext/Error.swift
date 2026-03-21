@@ -12,10 +12,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+import SwiftJavaJNICore
+
 public enum AndroidContextError: Error {
     
     case classNotFound(String)
     case methodNotFound(String)
     case nullValueForMethod(String)
-    case invalidJavaSignature(String)
+    case invalidSignature(String)
+    case virtualMachine(JavaVirtualMachine.VMError)
 }
