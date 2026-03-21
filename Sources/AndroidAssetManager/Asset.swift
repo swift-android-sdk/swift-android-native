@@ -66,29 +66,29 @@ public extension Asset {
 
     /// Reads up to `maxCount` bytes from the current cursor position.
     func read(maxCount: Int = 4096) throws(AndroidFileManagerError) -> [UInt8] {
-        guard maxCount > 0 else {
-            return []
-        }
+        guard maxCount > 0 else { return [] }
         var bytes = [UInt8](repeating: 0, count: maxCount)
-        let count = AAsset_read(pointer, &bytes, maxCount)
-        guard count >= 0 else {
-            throw .readAsset(count)
+        let count = bytes.withUnsafeMutableBytes {
+            AAsset_read(pointer, $0.baseAddress, maxCount)
         }
-        return Array(bytes.prefix(Int(count)))
+        guard count >= 0 else { throw .readAsset(count) }
+        bytes.removeSubrange(Int(count)...)
+        return bytes
     }
 
     /// Reads and returns all remaining bytes.
     func readAll(chunkSize: Int = 4096) throws(AndroidFileManagerError) -> [UInt8] {
-        guard chunkSize > 0 else {
-            return []
+        guard chunkSize > 0 else { return [] }
+        // Fast path: asset is backed by a contiguous buffer — single copy.
+        if let bytes = withUnsafeBufferPointer({ Array($0) }) {
+            return bytes
         }
+        // Slow path: chunked reads.
         var output = [UInt8]()
         output.reserveCapacity(Int(max(remainingLength, 0)))
         while true {
             let chunk = try read(maxCount: chunkSize)
-            if chunk.isEmpty {
-                break
-            }
+            if chunk.isEmpty { break }
             output.append(contentsOf: chunk)
         }
         return output
