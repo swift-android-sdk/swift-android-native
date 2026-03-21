@@ -59,7 +59,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "AndroidNDK",
+            name: "CAndroidNDK",
             linkerSettings: [
                 .linkedLibrary("android", .when(platforms: [.android])),
                 .linkedLibrary("log", .when(platforms: [.android])),
@@ -68,7 +68,7 @@ let package = Package(
         .target(
             name: "AndroidSystem",
             dependencies: [
-                .target(name: "AndroidNDK", condition: .when(platforms: [.android]))
+                .target(name: "CAndroidNDK", condition: .when(platforms: [.android]))
             ],
             swiftSettings: [
                 .define("SYSTEM_PACKAGE_DARWIN", .when(platforms: [.macOS, .macCatalyst, .iOS, .watchOS, .tvOS, .visionOS])),
@@ -83,7 +83,7 @@ let package = Package(
             name: "AndroidAssetManager",
             dependencies: [
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
-                .target(name: "AndroidNDK", condition: .when(platforms: [.android])),
+                .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
             ]),
         .testTarget(
             name: "AndroidAssetManagerTests",

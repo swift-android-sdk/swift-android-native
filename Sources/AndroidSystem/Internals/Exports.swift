@@ -37,7 +37,7 @@ import Musl
 #elseif canImport(WASILibc)
 import WASILibc
 #elseif canImport(Android)
-@_implementationOnly import AndroidNDK
+@_implementationOnly import CAndroidNDK
 import Android
 #else
 #error("Unsupported Platform")
