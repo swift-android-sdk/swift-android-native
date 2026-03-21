@@ -21,6 +21,29 @@ dependencies: [
 ]
 ```
 
+# JNI Dependencies and SwiftJava Interoperability
+
+This package depends only on [swiftlang/swift-java-jni-core](https://github.com/swiftlang/swift-java-jni-core),
+a lightweight module that provides the JNI type definitions (`jobject`, `jclass`, `JNIEnvironment`, etc.),
+the `JavaVirtualMachine` lifecycle manager, and the raw `JNINativeInterface` function table.
+It does **not** depend on the full [swiftlang/swift-java](https://github.com/swiftlang/swift-java) bridge
+or its higher-level abstractions (`JavaObject`, `JavaClass`, generated Java-to-Swift wrappers, etc.).
+
+This means SwiftAndroidNative can be used in projects that only need direct JNI access
+without pulling in the larger swift-java dependency graph.
+
+However, SwiftAndroidNative is designed to **optionally interoperate** with swift-java.
+Because both packages share the same underlying JNI types from swift-java-jni-core,
+a `jobject` obtained through SwiftAndroidNative (such as `AndroidContext.pointer`) can be
+passed directly to swift-java bridged APIs, and vice versa. For example, a context
+`jobject` returned by a swift-java generated bridge class can be handed to
+`AndroidContext.setSharedContext(_:env:)`, and an `AndroidContext.pointer` can be wrapped
+in a swift-java `JavaObjectHolder` for use with generated Java class bindings.
+
+If your project uses swift-java, add it as a separate dependency alongside swift-android-native;
+the two will share the same `JavaVirtualMachine` instance and JNI environment without conflict.
+
+
 # AndroidLogging
 
 This module provides a Logger API for native Swift on Android compatible with
@@ -90,7 +113,8 @@ function.
 # AndroidContext
 
 This module provides a minimal wrapper for [android.content.Context](https://developer.android.com/reference/android/content/Context)
-that uses [SwiftJNI](https://github.com/skiptools/swift-jni) to bridge into the global application context.
+that uses raw JNI calls (via [SwiftJavaJNICore](https://github.com/swiftlang/swift-java-jni-core))
+to bridge into the global application context.
 
 ## Installation
 
@@ -109,37 +133,77 @@ let context = try AndroidContext.application
 let packageName = try context.getPackageName()
 ```
 
-## Internals
+## Bootstrapping the Context
 
-### Implementation details
+The recommended way to initialize `AndroidContext` is to call `setSharedContext(_:env:)`
+as early as possible — before any code accesses `AndroidContext.application`. This avoids
+the automatic JVM lookup and reflective factory call entirely, giving you full control over
+how the context is provided.
 
-By default, the `AndroidContext.application` accessor will try to invoke the JNI method
-`android.app.ActivityThread.currentApplication()Landroid/app/Application;` to obtain the
-global application context. This can be overridden at app initialization time by setting
-the `SWIFT_ANDROID_CONTEXT_FACTORY` environment to a different static accessor, such as:
+### From `JNI_OnLoad`
+
+If your Swift code is loaded as a shared library by Java (e.g. via `System.loadLibrary`),
+implement the standard `JNI_OnLoad` entry point. The `JavaVM` pointer gives you a
+`JNIEnvironment`, and you can then look up the application context:
 
 ```swift
-// another way to access the global context (deprecated)
-setenv("SWIFT_ANDROID_CONTEXT_FACTORY", "android.app.AppGlobals.getInitialApplication()Landroid/app/Application;", 1)
+import SwiftJavaJNICore
+import AndroidContext
 
-let context = try AndroidContext.application
+@_cdecl("JNI_OnLoad")
+public func JNI_OnLoad(_ jvm: UnsafeMutablePointer<JavaVM?>, _ reserved: UnsafeMutableRawPointer?) -> jint {
+    // Adopt the JVM so SwiftJavaJNICore knows about it
+    let vm = JavaVirtualMachine(adoptingJVM: jvm)
+    JavaVirtualMachine.setSharedJVM(vm)
+    let env = try! vm.environment()
+    let jni = env.pointee!.pointee
+
+    // Look up the application context via ActivityThread
+    let cls = jni.FindClass(env, "android/app/ActivityThread")!
+    let mid = jni.GetStaticMethodID(env, cls, "currentApplication", "()Landroid/app/Application;")!
+    let app = jni.CallStaticObjectMethodA(env, cls, mid, [])!
+    let globalRef = jni.NewGlobalRef(env, app)! // prevent GC
+
+    AndroidContext.setSharedContext(globalRef, env: env)
+    return jint(JNI_VERSION_1_6)
+}
 ```
 
-Such setup must be performed before the first time the `AndroidContext.application`
-accessor is called, as the result will be cached the first time it is invoked.
+### From SwiftJava / swift-java bridged code
 
-Alternatively, if the application bootstrapping code already has access to a
-JNI context and `jobject` reference to the application context, it can be
-set directly in the static `contextPointer` field. For example,
-if your application uses an NDK [ANativeActivity](https://developer.android.com/ndk/reference/struct/a-native-activity)
-activity, then the context can be accessed from its reference to the underlying
-[android.app.NativeActivity](https://developer.android.com/reference/android/app/NativeActivity)
-instance:
+If you are using the full [swift-java](https://github.com/swiftlang/swift-java) bridge,
+the JVM is already set up for you. You can obtain the environment from
+`JavaVirtualMachine.shared()` and pass in a context `jobject` from the bridged Java side:
+
+```swift
+let jvm = try JavaVirtualMachine.shared()
+let env = try jvm.environment()
+AndroidContext.setSharedContext(someContextJobject, env: env)
+```
+
+### From an `ANativeActivity`
+
+If your application uses an NDK [ANativeActivity](https://developer.android.com/ndk/reference/struct/a-native-activity),
+you can set the context pointer directly:
 
 ```swift
 let nativeActivity: ANativeActivity = …
 AndroidContext.contextPointer = nativeActivity.clazz
-let context = try AndroidContext.application // returns the wrapper around the application context
+let context = try AndroidContext.application
+```
+
+### Automatic fallback
+
+If `setSharedContext` is never called and `contextPointer` is not set,
+`AndroidContext.application` will attempt to locate the JVM automatically using
+`JavaVirtualMachine.shared()` and then reflectively invoke the factory method
+`android.app.ActivityThread.currentApplication()` to obtain the global context.
+This can be overridden by setting the `SWIFT_ANDROID_CONTEXT_FACTORY` environment
+variable to a different static accessor before the first access:
+
+```swift
+setenv("SWIFT_ANDROID_CONTEXT_FACTORY", "android.app.AppGlobals.getInitialApplication()Landroid/app/Application;", 1)
+let context = try AndroidContext.application
 ```
 
 
