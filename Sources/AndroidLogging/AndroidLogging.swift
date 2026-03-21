@@ -21,7 +21,6 @@ import AndroidSystem
 public struct AndroidLogger: Equatable, Hashable, Sendable {
 
     public let tag: Tag
-
     public let priority: LogPriority
 
     public init(
