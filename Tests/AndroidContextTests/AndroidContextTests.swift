@@ -14,6 +14,7 @@
 
 import Testing
 import AndroidContext
+import AndroidAssetManager
 import SwiftJavaJNICore
 #if os(Android)
 import AndroidNDK
