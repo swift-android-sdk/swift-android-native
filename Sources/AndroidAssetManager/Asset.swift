@@ -129,4 +129,19 @@ public extension Asset {
         let buffer = UnsafeRawBufferPointer(start: baseAddress, count: count)
         return try body(buffer)
     }
+
+    /// Calls `body` with a zero-copy ``RawSpan`` over the asset's in-memory buffer.
+    ///
+    /// Unlike ``withUnsafeBufferPointer(_:)``, the span carries compile-time lifetime
+    /// tracking that prevents it from escaping the closure.
+    ///
+    /// - Returns: `nil` if the asset is not backed by a contiguous memory region.
+    func withRawSpan<E: Error, T>(
+        _ body: (RawSpan) throws(E) -> T
+    ) throws(E) -> T? {
+        guard let baseAddress = AAsset_getBuffer(pointer) else { return nil }
+        let count = Int(max(length, 0))
+        let rawBuffer = UnsafeRawBufferPointer(start: baseAddress, count: count)
+        return try body(rawBuffer.bytes)
+    }
 }
