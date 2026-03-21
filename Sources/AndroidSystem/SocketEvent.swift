@@ -121,4 +121,110 @@ extension SocketDescriptor.Event.Counter: CustomStringConvertible, CustomDebugSt
     
     public var debugDescription: String { description }
 }
+
+// MARK: - Operations
+
+extension SocketDescriptor.Event {
+    
+    internal var fileDescriptor: SocketDescriptor { .init(rawValue: rawValue) }
+    
+    /**
+     `eventfd()` creates an "eventfd object" that can be used as an event wait/notify mechanism by user-space applications, and by the kernel to notify user-space applications of events.
+     The object contains an unsigned 64-bit integer (uint64_t) counter that is maintained by the kernel.
+     This counter is initialized with the value specified in the argument initval.
+     */
+    @usableFromInline
+    internal static func _events(
+        _ counter: CUnsignedInt,
+        flags: SocketDescriptor.Event.Flags,
+        retryOnInterrupt: Bool
+    ) -> Result<SocketDescriptor.Event, Errno> {
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_eventfd(counter, flags.rawValue)
+        }.map({ SocketDescriptor.Event(rawValue: $0) })
+    }
+    
+    @_alwaysEmitIntoClient
+    public init(
+        _ counter: CUnsignedInt = 0,
+        flags: SocketDescriptor.Event.Flags = [],
+        retryOnInterrupt: Bool = true
+    ) throws(Errno) {
+        self = try Self._events(counter, flags: flags, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    /// Deletes a file descriptor.
+    ///
+    /// Deletes the file descriptor from the per-process object reference table.
+    /// If this is the last reference to the underlying object,
+    /// the object will be deactivated.
+    ///
+    /// The corresponding C function is `close`.
+    @_alwaysEmitIntoClient
+    public func close() throws(Errno) { try _close().get() }
+
+    @usableFromInline
+    internal func _close() -> Result<(), Errno> {
+        fileDescriptor._close()
+    }
+
+    @usableFromInline
+    internal func _read(
+      retryOnInterrupt: Bool
+    ) -> Result<Counter, Errno> {
+        var counter = Counter()
+        return withUnsafeMutableBytes(of: &counter.rawValue) {
+            fileDescriptor._read(into: $0, retryOnInterrupt: retryOnInterrupt)
+        }.map { assert($0 == 8) }.map { _ in counter }
+    }
+    
+    /**
+     Each successful `read(2)` returns an 8-byte integer. A read(2) will fail with the error EINVAL if the size of the supplied buffer is less than 8 bytes.
+     The value returned by read(2) is in host byte order, i.e., the native byte order for integers on the host machine.
+     The semantics of read(2) depend on whether the eventfd counter currently has a nonzero value and whether the EFD_SEMAPHORE flag was specified when creating the eventfd file descriptor:
+
+     - If EFD_SEMAPHORE was not specified and the eventfd counter has a nonzero value, then a read(2) returns 8 bytes containing that value, and the counter's value is reset to zero.
+     - If EFD_SEMAPHORE was specified and the eventfd counter has a nonzero value, then a read(2) returns 8 bytes containing the value 1, and the counter's value is decremented by 1.
+
+     If the eventfd counter is zero at the time of the call to read(2), then the call either blocks until the counter becomes nonzero (at which time, the read(2) proceeds as described above) or fails with the error EAGAIN if the file descriptor has been made nonblocking.
+     */
+    @_alwaysEmitIntoClient
+    public func read(
+      retryOnInterrupt: Bool = true
+    ) throws(Errno) -> Counter {
+      try _read(retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    /**
+     A write(2) call adds the 8-byte integer value supplied in
+         its buffer to the counter.  The maximum value that may be
+         stored in the counter is the largest unsigned 64-bit value
+         minus 1 (i.e., 0xfffffffffffffffe).  If the addition would
+         cause the counter's value to exceed the maximum, then the
+         write(2) either blocks until a read(2) is performed on the
+         file descriptor, or fails with the error EAGAIN if the file
+         descriptor has been made nonblocking.
+
+         A write(2) fails with the error EINVAL if the size of the
+         supplied buffer is less than 8 bytes, or if an attempt is
+         made to write the value 0xffffffffffffffff.
+     */
+    @_alwaysEmitIntoClient
+    public func write(
+      _ counter: Counter,
+      retryOnInterrupt: Bool = true
+    ) throws(Errno) {
+      try _write(counter, retryOnInterrupt: retryOnInterrupt).get()
+    }
+    
+    @usableFromInline
+    internal func _write(
+      _ counter: Counter,
+      retryOnInterrupt: Bool
+    ) -> Result<(), Errno> {
+        return withUnsafeBytes(of: counter.rawValue) {
+            fileDescriptor._write($0, retryOnInterrupt: retryOnInterrupt)
+        }.map { assert($0 == 8) }
+    }
+}
 #endif
