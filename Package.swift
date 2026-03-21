@@ -40,6 +40,7 @@ let package = Package(
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
         .library(name: "AndroidChoreographer", targets: ["AndroidChoreographer"]),
+        .library(name: "AndroidManifest", targets: ["AndroidManifest"]),
     ],
     dependencies: [
         swiftJavaJNICoreDep
