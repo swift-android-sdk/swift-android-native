@@ -26,13 +26,13 @@ dependencies: [
 This package depends only on [swiftlang/swift-java-jni-core](https://github.com/swiftlang/swift-java-jni-core),
 a lightweight module that provides the JNI type definitions (`jobject`, `jclass`, `JNIEnvironment`, etc.),
 the `JavaVirtualMachine` lifecycle manager, and the raw `JNINativeInterface` function table.
-It does **not** depend on the full [swiftlang/swift-java](https://github.com/swiftlang/swift-java) bridge
+It does *not* depend on the full [swiftlang/swift-java](https://github.com/swiftlang/swift-java) bridge
 or its higher-level abstractions (`JavaObject`, `JavaClass`, generated Java-to-Swift wrappers, etc.).
 
 This means SwiftAndroidNative can be used in projects that only need direct JNI access
 without pulling in the larger swift-java dependency graph.
 
-However, SwiftAndroidNative is designed to **optionally interoperate** with swift-java.
+However, SwiftAndroidNative is designed to optionally interoperate with swift-java.
 Because both packages share the same underlying JNI types from swift-java-jni-core,
 a `jobject` obtained through SwiftAndroidNative (such as `AndroidContext.pointer`) can be
 passed directly to swift-java bridged APIs, and vice versa. For example, a context
@@ -184,7 +184,7 @@ AndroidContext.setSharedContext(someContextJobject, env: env)
 ### From an `ANativeActivity`
 
 If your application uses an NDK [ANativeActivity](https://developer.android.com/ndk/reference/struct/a-native-activity),
-you can set the context pointer directly:
+you can set the context pointer directly using the (misnamed) [`clazz`](https://developer.android.com/ndk/reference/struct/a-native-activity#struct_a_native_activity_1abbde1ec6b9af24c517a604f0d401b274) pointer:
 
 ```swift
 let nativeActivity: ANativeActivity = …
