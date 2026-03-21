@@ -3,53 +3,48 @@
 import Android
 import CAndroidNDK
 #endif
-import AndroidLogging
-import CoreFoundation
 
-//let logger = Logger(subsystem: "swift.android.native", category: "AndroidChoreographer")
-
-/// https://developer.android.com/ndk/reference/group/choreographer
-@available(macOS, unavailable)
+/// Choreographer coordinates the timing of frame rendering.
+///
+/// This is the C version of the android.view.Choreographer object in Java. If you do not use Choreographer to pace your render loop, you may render too quickly for the display, increasing latency between frame submission and presentation.
+///
+/// Input events are guaranteed to be processed before the frame callback is called, and will not be run concurrently. Input and sensor events should not be handled in the Choregrapher callback.
+///
+/// The frame callback is also the appropriate place to run any per-frame state update logic. For example, in a game, the frame callback should be responsible for updating things like physics, AI, game state, and rendering the frame. Input and sensors should be handled separately via callbacks registered with AInputQueue and ASensorManager.
+///
+/// [See Also](https://developer.android.com/ndk/reference/group/choreographer)
+//@available(macOS, unavailable)
 @available(iOS, unavailable)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
-public final class AndroidChoreographer : @unchecked Sendable {
-    private let _choreographer: OpaquePointer
+public struct AndroidChoreographer : @unchecked Sendable {
+    
+    private let pointer: OpaquePointer
 
     /// Get the AChoreographer instance for the main thread.
     ///
     /// Must be initialized at startup time with `setupMainChoreographer()`
-    public private(set) static var main: AndroidChoreographer!
-
+    public nonisolated(unsafe) private(set) static var main: AndroidChoreographer!
+    
     /// Get the AChoreographer instance for the current thread.
     ///
     /// This must be called on an ALooper thread.
     public static var current: AndroidChoreographer {
-        #if !os(Android)
-        fatalError("only implemented for Android")
-        #else
-        AndroidChoreographer(choreographer: AChoreographer_getInstance())
-        #endif
+        AndroidChoreographer(pointer: AChoreographer_getInstance()!)
     }
 
-    init(choreographer: OpaquePointer) {
-        self._choreographer = choreographer
+    private init(pointer: OpaquePointer) {
+        self.pointer = pointer
     }
 
     /// Add a callback to the Choreographer to  invoke `_dispatch_main_queue_callback_4CF` on each frame to drain the main queue
     public static func setupMainChoreographer() {
         if Self.main == nil {
-            //logger.info("setupMainQueue")
             Self.main = AndroidChoreographer.current
-            //enqueueMainChoreographer()
         }
     }
 
     public func postFrameCallback(_ callback: @convention(c)(Int, UnsafeMutableRawPointer?) -> ()) {
-        #if !os(Android)
-        fatalError("only implemented for Android")
-        #else
-        AChoreographer_postFrameCallback(_choreographer, callback, nil)
-        #endif
+        AChoreographer_postFrameCallback(pointer, callback, nil)
     }
 }
