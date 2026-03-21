@@ -17,6 +17,7 @@ import Darwin
 #elseif canImport(Glibc)
 import Glibc
 #endif
+import SwiftJavaJNICore
 
 #if !os(Android)
 
@@ -96,6 +97,8 @@ func AAssetManager_openDir(
     _ manager: OpaquePointer,
     _ dirName: UnsafePointer<CChar>?
 ) -> OpaquePointer? { stub() }
+
+func AAssetManager_fromJava(_ environment: JNIEnvironment?, _ javaObject: jobject) -> OpaquePointer? { fatalError("stub") }
 
 // MARK: - AAssetDir
 
