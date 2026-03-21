@@ -57,10 +57,32 @@ public class AndroidContext: @unchecked Sendable {
         self.env = env
     }
 
+    /// Sets a pre-initialized Android context directly, bypassing the automatic JVM and context
+    /// lookup performed by the `application` accessor.
+    ///
+    /// Call this method early in your application's lifecycle — for example, from a `JNI_OnLoad`
+    /// function or an `ANativeActivity` callback — before any code accesses `AndroidContext.application`.
+    /// Once the shared context is set, `application` will return it immediately without attempting to
+    /// locate the JVM or invoke the `contextFactory` reflective lookup.
+    ///
+    /// - Parameter context: A JNI `jobject` reference to an `android.content.Context` (or subclass
+    ///   such as `android.app.Application`). The caller is responsible for ensuring this reference
+    ///   remains valid for the lifetime of the process (typically a global ref).
+    /// - Parameter env: The JNI environment for the current thread.
+    public static func setSharedContext(_ context: jobject, env: JNIEnvironment) {
+        sharedContext = AndroidContext(pointer: context, env: env)
+    }
+
+    /// A manually provided shared context, set via `setSharedContext(_:env:)`.
+    private static var sharedContext: AndroidContext? = nil
+
     /// Returns the application context.
     public static var application: AndroidContext {
         get throws {
-            try applicationContext.get()
+            if let sharedContext = sharedContext {
+                return sharedContext
+            }
+            return try applicationContext.get()
         }
     }
 
