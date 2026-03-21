@@ -17,6 +17,9 @@ public enum AndroidFileManagerError: Swift.Error, Equatable, Sendable {
     /// Unable to open asset at the specified path.
     case openAsset(String)
 
+    /// Unable to open asset directory at the specified path.
+    case openAssetDirectory(String)
+
     /// Error reading asset bytes (result code).
     case readAsset(Int32)
 
