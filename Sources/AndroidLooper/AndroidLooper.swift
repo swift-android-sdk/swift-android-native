@@ -14,7 +14,7 @@
 
 #if os(Android)
 import Android
-import AndroidNDK
+import CAndroidNDK
 import AndroidSystem
 import AndroidLogging
 import ConcurrencyRuntimeC
