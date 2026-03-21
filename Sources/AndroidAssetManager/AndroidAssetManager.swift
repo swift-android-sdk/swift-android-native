@@ -23,6 +23,7 @@ import AndroidNDK
 #endif
 import SwiftJavaJNICore
 
+
 /// https://developer.android.com/ndk/reference/group/asset
 //@available(macOS, unavailable)
 @available(iOS, unavailable)
