@@ -49,6 +49,7 @@ let package = Package(
     ],
     products: [
         .library(name: "AndroidNative", targets: ["AndroidNative"]),
+        .library(name: "AndroidContext", targets: ["AndroidContext"]),
         .library(name: "AndroidAssetManager", targets: ["AndroidAssetManager"]),
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
