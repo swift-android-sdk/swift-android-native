@@ -6,7 +6,7 @@ import Foundation
 #endif
 #if os(Android)
 import Android
-import AndroidNDK
+import CAndroidNDK
 #endif
 import SwiftJavaJNICore
 
