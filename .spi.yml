@@ -4,7 +4,6 @@ metadata:
 builder:
   configs:
     - documentation_targets:
-        - 'AndroidContext'
         - 'AndroidAssetManager'
         - 'AndroidLogging'
         - 'AndroidLooper'
