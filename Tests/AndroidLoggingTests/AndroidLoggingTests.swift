@@ -21,8 +21,8 @@ import AndroidLogging
 
 struct AndroidLoggingTests {
     @Test func testOSLogAPI() {
-        //let emptyLogger = Logger()
-        //emptyLogger.info("Android logger test: empty message")
+        let emptyLogger = Logger()
+        emptyLogger.info("Android logger test: empty message")
 
         let logger = Logger(subsystem: "AndroidLoggingTests", category: "test")
 

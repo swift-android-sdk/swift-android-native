@@ -17,7 +17,7 @@ import Android
 import CAndroidNDK
 #endif
 
-#if canImport(Darwin)
+#if canImport(os) && canImport(OSLog)
 @_exported import OSLog
 #else
 import AndroidLogging

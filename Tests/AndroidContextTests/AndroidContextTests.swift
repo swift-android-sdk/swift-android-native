@@ -15,24 +15,21 @@
 import Testing
 import AndroidContext
 import AndroidAssetManager
+import OSLog
 import SwiftJavaJNICore
-#if os(Android)
-import CAndroidNDK
-#endif
 
-#if !os(iOS)
 struct AndroidContextTests {
-    func testAndroidContext() throws {
+    @Test func testAndroidContext() throws {
+        let logger = Logger(subsystem: "AndroidContextTests", category: "testAndroidContext")
         #if os(Android)
-        let nativeActivity: ANativeActivity! = nil
-        AndroidContext.contextPointer = nativeActivity.clazz
-        #endif
+
         let context = try AndroidContext.application
-        let assetManager: AssetManager = context.assetManager
-        var directory = try assetManager.openDirectory("")
-        while let item = directory.next() {
+        logger.info("context package name: \(try context.getPackageName() ?? "")")
+        #expect(try context.getPackageName() == "org.swift.test.swift_android_native") // the default package name in `skip android test --apk`
+        let assetManager: AndroidAssetManager = context.assetManager
+        for item in assetManager.listAssets(inDirectory: "") ?? [] {
             print("asset item: \(item)")
         }
+        #endif
     }
 }
-#endif

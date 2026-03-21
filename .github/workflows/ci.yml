@@ -22,7 +22,8 @@ jobs:
         swift: ['nightly-6.3']
 
         # android-api: ['28', '36']
-        android-api: ['28']
+        # needs API 31 due to https://github.com/swiftlang/swift-java/issues/419
+        android-api: ['31']
 
         android-ndk: ['r27d', 'r30-beta1']
         # android-ndk: ['r27d']
