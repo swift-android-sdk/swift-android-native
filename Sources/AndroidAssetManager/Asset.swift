@@ -16,6 +16,7 @@
 import Android
 import CAndroidNDK
 #endif
+import AndroidSystem
 
 /// A handle to an `AAsset`.
 ///
@@ -107,14 +108,14 @@ public extension Asset {
     }
 
     /// Returns a file descriptor and byte range when available.
-    func openFileDescriptor() -> (fd: Int32, start: Int64, length: Int64)? {
+    func open() -> (fileDescriptor: FileDescriptor, start: Int64, length: Int64)? {
         var start: Int64 = 0
         var length: Int64 = 0
         let fd = AAsset_openFileDescriptor64(pointer, &start, &length)
         guard fd >= 0 else {
             return nil
         }
-        return (fd, start, length)
+        return (FileDescriptor(rawValue: fd), start, length)
     }
 
     /// Returns an in-memory buffer, if this asset exposes one.
