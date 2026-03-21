@@ -87,6 +87,20 @@ let package = Package(
         .testTarget(name: "AndroidChoreographerTests", dependencies: [
             "AndroidChoreographer",
         ]),
+        .target(
+            name: "AndroidManifest",
+            dependencies: [
+                "CAndroidNDK"
+            ],
+            swiftSettings: [
+              //.swiftLanguageMode(.v6),
+              ndkVersionDefine,
+              sdkVersionDefine
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
         .target(name: "AndroidNative", dependencies: [
             .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
             "AndroidAssetManager",
