@@ -91,6 +91,17 @@ let package = Package(
                 "AndroidAssetManager"
             ]),
         .target(
+            name: "AndroidContext",
+            dependencies: [
+                "AndroidAssetManager",
+                .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
+            ]),
+        .testTarget(
+            name: "AndroidContextTests",
+            dependencies: [
+                "AndroidContext"
+            ]),
+        .target(
             name: "AndroidLogging",
             dependencies: [
                 "AndroidSystem"

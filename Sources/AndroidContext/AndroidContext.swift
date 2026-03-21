@@ -24,8 +24,8 @@ import func Darwin.getenv
 #elseif canImport(Glibc)
 import func Glibc.getenv
 #endif
-@_exported import AndroidAssetManager
-import SwiftJNI
+import SwiftJavaJNICore
+public import AndroidAssetManager
 
 /// A native reference to
 /// [android.content.Context](https://developer.android.com/reference/android/content/Context)
@@ -33,7 +33,7 @@ import SwiftJNI
 @available(iOS, unavailable)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
-public class AndroidContext: JObject, @unchecked Sendable {
+public class AndroidContext: @unchecked Sendable {
     /// The JNI signature for the method to invoke to obtain the global Context.
     /// This can be manually changed before initialization to a different signature.
     /// It must be a zero-argument static fuction that returns an instance of `android.content.Context`.
@@ -43,7 +43,19 @@ public class AndroidContext: JObject, @unchecked Sendable {
     public static var contextFactory = getenv("SWIFT_ANDROID_CONTEXT_FACTORY").flatMap({ String(cString: $0) }) ?? "android.app.ActivityThread.currentApplication()Landroid/app/Application;"
 
     /// A global pointer to the application context, in case the application environment wants to initialize it directly without going through the factory method.
-    public static var contextPointer: JavaObjectPointer? = nil
+    public static var contextPointer: jobject? = nil
+
+    /// The underlying JNI object pointer for this context.
+    public let pointer: jobject
+
+    /// The JNI environment used by this context.
+    private let env: JNIEnvironment
+
+    /// Initialize from an existing JNI object pointer and environment.
+    public init(pointer: jobject, env: JNIEnvironment) {
+        self.pointer = pointer
+        self.env = env
+    }
 
     /// Returns the application context.
     public static var application: AndroidContext {
@@ -55,11 +67,13 @@ public class AndroidContext: JObject, @unchecked Sendable {
     /// Obtain the global application context by checking whether the static `contextPointer` is set,
     /// and if not, using the `contextFactory` string to reflectively look up the global context.
     private static let applicationContext: Result<AndroidContext, Error> = Result(catching: {
-        try JNI.attachJVM() // ensure that we have a JNI context
+        let jvm: JavaVirtualMachine = try JavaVirtualMachine.shared()
+        let env: JNIEnvironment = try jvm.environment()
+        let jni: JNINativeInterface = env.pointee!.pointee
 
         // if we have provided a manual context jobject, then we just use that and skip trying to access the factory
         if let contextPointer = contextPointer {
-            return AndroidContext(contextPointer)
+            return AndroidContext(pointer: contextPointer, env: env)
         }
 
         // alternative fallback mechanism:
@@ -79,24 +93,57 @@ public class AndroidContext: JObject, @unchecked Sendable {
         let contextMethod = "" + contextFunctionParts[0]
         let contextSig = "(" + contextFunctionParts[1]
 
-        let cls = try JClass(name: contextType)
-        guard let mth = cls.getStaticMethodID(name: contextMethod, sig: contextSig) else {
+        // Convert class name from dot notation to slash notation for JNI
+        let jniClassName = contextType.split(separator: ".").joined(separator: "/")
+
+        guard let cls: jclass = jni.FindClass(env, jniClassName) else {
+            throw ContextError(errorDescription: "Unable to find class \(contextType)")
+        }
+
+        guard let mth: jmethodID = jni.GetStaticMethodID(env, cls, contextMethod, contextSig) else {
             throw ContextError(errorDescription: "Unable to find method \(contextMethod)")
         }
-        let ctx: JavaObjectPointer = try cls.callStatic(method: mth, options: [], args: [])
-        return AndroidContext(ctx)
+
+        guard let ctx: jobject = jni.CallStaticObjectMethodA(env, cls, mth, []) else {
+            throw ContextError(errorDescription: "Factory method \(contextMethod) returned null")
+        }
+
+        return AndroidContext(pointer: ctx, env: env)
     })
 
-    private static let javaClass = try! JClass(name: "android/content/Context", systemClass: true)
-
     /// The `AndroidAssetManager` for this context
-    public private(set) lazy var assetManager = JNI.jni.withEnv { _, env in AndroidAssetManager(env: env, peer: self.safePointer()) }
+    public private(set) lazy var assetManager: AndroidAssetManager = {
+        let jni: JNINativeInterface = env.pointee!.pointee
+
+        // Call context.getAssets() to get the Java AssetManager
+        let contextClass: jclass = jni.GetObjectClass(env, pointer)!
+        let getAssetsID: jmethodID = jni.GetMethodID(env, contextClass, "getAssets", "()Landroid/content/res/AssetManager;")!
+        let assetManagerObj: jobject = jni.CallObjectMethodA(env, pointer, getAssetsID, [])!
+
+        return AndroidAssetManager(env: env, peer: assetManagerObj)
+    }()
 
     /// Returns the package name for the current context
     public func getPackageName() throws -> String? {
-        try call(method: Self.getPackageNameID, options: [], args: [])
+        let jni: JNINativeInterface = env.pointee!.pointee
+
+        let contextClass: jclass = jni.GetObjectClass(env, pointer)!
+        guard let getPackageNameID: jmethodID = jni.GetMethodID(env, contextClass, "getPackageName", "()Ljava/lang/String;") else {
+            throw ContextError(errorDescription: "Unable to find getPackageName method")
+        }
+
+        guard let javaString: jobject = jni.CallObjectMethodA(env, pointer, getPackageNameID, []) else {
+            return nil
+        }
+
+        // Convert Java String to Swift String
+        guard let utf8Chars = jni.GetStringUTFChars(env, javaString, nil) else {
+            return nil
+        }
+        let result = String(cString: utf8Chars)
+        jni.ReleaseStringUTFChars(env, javaString, utf8Chars)
+        return result
     }
-    private static let getPackageNameID = javaClass.getMethodID(name: "getPackageName", sig: "()Ljava/lang/String;")!
 
     struct ContextError: LocalizedError {
         var errorDescription: String?
