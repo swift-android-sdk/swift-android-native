@@ -18,7 +18,6 @@ public struct LogTag: RawRepresentable, Equatable, Hashable, Codable, Sendable {
     public let rawValue: String
 
     public init(rawValue: String) {
-        assert(rawValue.isEmpty == false)
         self.rawValue = rawValue
     }
 }
