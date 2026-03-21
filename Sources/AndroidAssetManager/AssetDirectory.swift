@@ -31,7 +31,7 @@ public struct AssetDirectory: ~Copyable {
 public extension AssetDirectory {
 
     /// Returns the file name of the next asset in the directory, or `nil` when exhausted.
-    mutating func nextFileName() -> String? {
+    mutating func next() -> String? {
         guard let cString = AAssetDir_getNextFileName(pointer) else {
             return nil
         }
@@ -62,7 +62,7 @@ public extension AssetDirectory {
         }
 
         public func next() -> String? {
-            directory.nextFileName()
+            directory.next()
         }
 
         public func makeIterator() -> AssetDirectory.Sequence { self }
