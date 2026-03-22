@@ -272,7 +272,7 @@ internal func system_getenv(
     return getenv(name)
 }
 
-#if os(Linux) || os(Android)
+#if os(Android)
 internal func system_eventfd(
     _ initval: CUnsignedInt,
     _ flags: CInt

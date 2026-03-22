@@ -35,7 +35,9 @@ var ALOOPER_POLL_CALLBACK: Int { stub() }
 var ALOOPER_POLL_TIMEOUT: Int { stub() }
 var ALOOPER_POLL_ERROR: Int { stub() }
 
+#if canImport(Darwin)
 // renamed on Darwin
 var kCFRunLoopDefaultMode: CFRunLoopMode { .defaultMode }
+#endif
 
 #endif

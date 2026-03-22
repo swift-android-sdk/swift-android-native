@@ -15,7 +15,7 @@
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
-import Gblic
+import Glibc
 #endif
 
 import Dispatch
