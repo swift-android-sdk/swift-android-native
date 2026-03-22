@@ -198,6 +198,11 @@ let package = Package(
                 .linkedLibrary("android", .when(platforms: [.android]))
             ]
         ),
+        .testTarget(
+            name: "AndroidHardwareTests",
+            dependencies: [
+                "AndroidHardware"
+            ]),
         .target(
             name: "AndroidNative",
             dependencies: [
