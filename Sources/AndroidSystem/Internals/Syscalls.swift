@@ -271,3 +271,15 @@ internal func system_getenv(
 ) -> UnsafeMutablePointer<CChar>? {
   return getenv(name)
 }
+
+#if os(Linux) || os(Android)
+internal func system_eventfd(
+  _ initval: CUnsignedInt,
+  _ flags: CInt
+) -> CInt {
+#if ENABLE_MOCKING
+  if mockingEnabled { return _mock(initval, flags) }
+#endif
+  return eventfd(initval, flags)
+}
+#endif

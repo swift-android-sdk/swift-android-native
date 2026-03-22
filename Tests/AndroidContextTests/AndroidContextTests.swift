@@ -26,8 +26,9 @@ struct AndroidContextTests {
         let context = try AndroidContext.application
         logger.info("context package name: \(try context.getPackageName() ?? "")")
         #expect(try context.getPackageName() == "org.swift.test.swift_android_native") // the default package name in `skip android test --apk`
-        let assetManager: AndroidAssetManager = context.assetManager
-        for item in assetManager.listAssets(inDirectory: "") ?? [] {
+        let assetManager: AssetManager = context.assetManager
+        var directory = try assetManager.openDirectory("")
+        while let item = directory.next() {
             print("asset item: \(item)")
         }
         #endif

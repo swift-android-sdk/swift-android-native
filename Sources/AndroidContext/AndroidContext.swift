@@ -40,10 +40,12 @@ public class AndroidContext: @unchecked Sendable {
     ///
     /// The default value of the factory will be the value of the `SWIFT_ANDROID_CONTEXT_FACTORY` environment variable,
     /// and if unset, will fall back to `android.app.ActivityThread.currentApplication()Landroid/app/Application;`.
-    public static var contextFactory = getenv("SWIFT_ANDROID_CONTEXT_FACTORY").flatMap({ String(cString: $0) }) ?? "android.app.ActivityThread.currentApplication()Landroid/app/Application;"
+    public static var contextFactory: String {
+        getenv("SWIFT_ANDROID_CONTEXT_FACTORY").flatMap({ String(cString: $0) }) ?? "android.app.ActivityThread.currentApplication()Landroid/app/Application;"
+    }
 
     /// A global pointer to the application context, in case the application environment wants to initialize it directly without going through the factory method.
-    public static var contextPointer: jobject? = nil
+    public nonisolated(unsafe) static var contextPointer: jobject? = nil
 
     /// The underlying JNI object pointer for this context.
     public let pointer: jobject
@@ -74,11 +76,11 @@ public class AndroidContext: @unchecked Sendable {
     }
 
     /// A manually provided shared context, set via `setSharedContext(_:env:)`.
-    private static var sharedContext: AndroidContext? = nil
+    private nonisolated(unsafe) static var sharedContext: AndroidContext? = nil
 
     /// Returns the application context.
     public static var application: AndroidContext {
-        get throws {
+        get throws(AndroidContextError) {
             if let sharedContext = sharedContext {
                 return sharedContext
             }
@@ -88,14 +90,24 @@ public class AndroidContext: @unchecked Sendable {
 
     /// Obtain the global application context by checking whether the static `contextPointer` is set,
     /// and if not, using the `contextFactory` string to reflectively look up the global context.
-    private static let applicationContext: Result<AndroidContext, Error> = Result(catching: {
-        let jvm: JavaVirtualMachine = try JavaVirtualMachine.shared()
-        let env: JNIEnvironment = try jvm.environment()
+    private static let applicationContext: Result<AndroidContext, AndroidContextError> = {
+        let jvm: JavaVirtualMachine
+        let env: JNIEnvironment
+        do {
+            jvm = try JavaVirtualMachine.shared()
+            env = try jvm.environment()
+        }
+        catch let error as JavaVirtualMachine.VMError {
+            return .failure(.virtualMachine(error))
+        }
+        catch {
+            fatalError("Non-JavaVirtualMachine.VMError error thrown")
+        }
         let jni: JNINativeInterface = env.pointee!.pointee
 
         // if we have provided a manual context jobject, then we just use that and skip trying to access the factory
         if let contextPointer = contextPointer {
-            return AndroidContext(pointer: contextPointer, env: env)
+            return .success(AndroidContext(pointer: contextPointer, env: env))
         }
 
         // alternative fallback mechanism:
@@ -109,7 +121,7 @@ public class AndroidContext: @unchecked Sendable {
         // get the second part of the contextFactory parameter: currentApplication()Landroid/app/Application;
         let contextFunctionParts = contextRemainder.split(separator: "(")
         if contextFunctionParts.count != 2 {
-            throw ContextError(errorDescription: "Invalid contextFactory signature: \(contextFactory)")
+            return .failure(.invalidSignature(contextFactory))
         }
 
         let contextMethod = "" + contextFunctionParts[0]
@@ -119,19 +131,19 @@ public class AndroidContext: @unchecked Sendable {
         let jniClassName = contextType.split(separator: ".").joined(separator: "/")
 
         guard let cls: jclass = jni.FindClass(env, jniClassName) else {
-            throw ContextError(errorDescription: "Unable to find class \(contextType)")
+            return .failure(.classNotFound(contextType))
         }
 
         guard let mth: jmethodID = jni.GetStaticMethodID(env, cls, contextMethod, contextSig) else {
-            throw ContextError(errorDescription: "Unable to find method \(contextMethod)")
+            return .failure(.methodNotFound(contextMethod))
         }
 
         guard let ctx: jobject = jni.CallStaticObjectMethodA(env, cls, mth, []) else {
-            throw ContextError(errorDescription: "Factory method \(contextMethod) returned null")
+            return .failure(.nullValueForMethod(contextMethod))
         }
 
-        return AndroidContext(pointer: ctx, env: env)
-    })
+        return .success(AndroidContext(pointer: ctx, env: env))
+    }()
 
     /// The `AndroidAssetManager` for this context
     public var assetManager: AssetManager {
@@ -146,12 +158,12 @@ public class AndroidContext: @unchecked Sendable {
     }
 
     /// Returns the package name for the current context
-    public func getPackageName() throws -> String? {
+    public func getPackageName() throws(AndroidContextError) -> String? {
         let jni: JNINativeInterface = env.pointee!.pointee
 
         let contextClass: jclass = jni.GetObjectClass(env, pointer)!
         guard let getPackageNameID: jmethodID = jni.GetMethodID(env, contextClass, "getPackageName", "()Ljava/lang/String;") else {
-            throw ContextError(errorDescription: "Unable to find getPackageName method")
+            throw AndroidContextError.methodNotFound("getPackageName")
         }
 
         guard let javaString: jobject = jni.CallObjectMethodA(env, pointer, getPackageNameID, []) else {
@@ -165,9 +177,5 @@ public class AndroidContext: @unchecked Sendable {
         let result = String(cString: utf8Chars)
         jni.ReleaseStringUTFChars(env, javaString, utf8Chars)
         return result
-    }
-
-    struct ContextError: LocalizedError {
-        var errorDescription: String?
     }
 }
