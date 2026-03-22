@@ -148,7 +148,7 @@ func AStorageManager_mountObb(
     _ manager: OpaquePointer,
     _ filename: UnsafePointer<CChar>?,
     _ key: UnsafePointer<CChar>?,
-    _ callback: UnsafeMutableRawPointer?,
+    _ callback: (@convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void)?,
     _ data: UnsafeMutableRawPointer?
 ) { stub() }
 
@@ -156,7 +156,7 @@ func AStorageManager_unmountObb(
     _ manager: OpaquePointer,
     _ filename: UnsafePointer<CChar>?,
     _ force: Int32,
-    _ callback: UnsafeMutableRawPointer?,
+    _ callback: (@convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void)?,
     _ data: UnsafeMutableRawPointer?
 ) { stub() }
 
@@ -169,5 +169,17 @@ func AStorageManager_getMountedObbPath(
     _ manager: OpaquePointer,
     _ filename: UnsafePointer<CChar>?
 ) -> UnsafePointer<CChar>? { stub() }
+
+// MARK: - AObbInfo
+
+func AObbScanner_getObbInfo(_ filename: UnsafePointer<CChar>?) -> OpaquePointer? { stub() }
+
+func AObbInfo_delete(_ obbInfo: OpaquePointer) { stub() }
+
+func AObbInfo_getFlags(_ obbInfo: OpaquePointer) -> Int32 { stub() }
+
+func AObbInfo_getPackageName(_ obbInfo: OpaquePointer) -> UnsafePointer<CChar>? { stub() }
+
+func AObbInfo_getVersion(_ obbInfo: OpaquePointer) -> Int32 { stub() }
 
 #endif
