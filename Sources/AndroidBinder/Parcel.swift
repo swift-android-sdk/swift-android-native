@@ -21,6 +21,7 @@ import Binder
  * binder to communicate, they must agree on a format of this parcel to be used in order to transfer
  * data. This is usually done in an IDL (see AIDL, specifically).
  */
+@available(Android 29, *)
 public struct Parcel: ~Copyable {
 
     internal let handle: Handle

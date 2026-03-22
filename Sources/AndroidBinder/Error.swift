@@ -11,6 +11,7 @@ import CAndroidNDK
 #endif
 
 /// Android NDK Binder Error
+@available(Android 29, *)
 public struct AndroidBinderError: Error {
 
     public let errorCode: ErrorCode

@@ -53,6 +53,7 @@ func AIBinder_getClass(_ binder: OpaquePointer) -> OpaquePointer? { stub() }
 func AIBinder_prepareTransaction(_ binder: OpaquePointer, _ outParcel: UnsafeMutablePointer<OpaquePointer?>) -> binder_status_t { stub() }
 func AIBinder_transact(_ binder: OpaquePointer, _ transactionCode: UInt32, _ inParcel: UnsafeMutablePointer<OpaquePointer?>, _ outParcel: UnsafeMutablePointer<OpaquePointer?>, _ flags: UInt32) -> binder_status_t { stub() }
 func AIBinder_setExtension(_ binder: OpaquePointer, _ extensionBinder: OpaquePointer) -> binder_status_t { stub() }
+@available(Android 30, *)
 func AIBinder_getExtension(_ binder: OpaquePointer, _ outExt: UnsafeMutablePointer<OpaquePointer?>) -> binder_status_t { stub() }
 func AIBinder_isRemote(_ binder: OpaquePointer) -> Bool { stub() }
 func AIBinder_isAlive(_ binder: OpaquePointer) -> Bool { stub() }
@@ -62,6 +63,7 @@ func AIBinder_linkToDeath(_ binder: OpaquePointer, _ recipient: OpaquePointer, _
 func AIBinder_unlinkToDeath(_ binder: OpaquePointer, _ recipient: OpaquePointer, _ cookie: UnsafeMutableRawPointer?) -> binder_status_t { stub() }
 func AIBinder_getCallingUid() -> uid_t { stub() }
 func AIBinder_getCallingPid() -> pid_t { stub() }
+@available(Android 33, *)
 func AIBinder_isHandlingTransaction() -> Bool { stub() }
 func AIBinder_debugGetRefCount(_ binder: OpaquePointer) -> Int32 { stub() }
 
@@ -88,21 +90,27 @@ func AIBinder_DeathRecipient_setOnUnlinked(
     _ onUnlinked: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?
 ) { stub() }
 
-// MARK: - Parcel
+// MARK: - Parcel (API 29+)
 
-// Lifecycle (API 29/31)
-func AParcel_create() -> OpaquePointer? { stub() }
+// Lifecycle
 func AParcel_delete(_ parcel: OpaquePointer) { stub() }
+@available(Android 31, *)
+func AParcel_create() -> OpaquePointer? { stub() }
 
-// Position and size (API 29/31)
+// Position and size
 func AParcel_setDataPosition(_ parcel: OpaquePointer, _ position: Int32) -> binder_status_t { stub() }
 func AParcel_getDataPosition(_ parcel: OpaquePointer) -> Int32 { stub() }
+@available(Android 31, *)
 func AParcel_getDataSize(_ parcel: OpaquePointer) -> Int32 { stub() }
+@available(Android 31, *)
 func AParcel_reset(_ parcel: OpaquePointer) -> binder_status_t { stub() }
+@available(Android 31, *)
 func AParcel_appendFrom(_ from: OpaquePointer, _ to: OpaquePointer, _ start: Int32, _ size: Int32) -> binder_status_t { stub() }
 
-// Marshal / unmarshal (API 33)
+// Marshal / unmarshal
+@available(Android 33, *)
 func AParcel_marshal(_ parcel: OpaquePointer, _ buffer: UnsafeMutablePointer<UInt8>, _ start: Int, _ length: Int) -> binder_status_t { stub() }
+@available(Android 33, *)
 func AParcel_unmarshal(_ parcel: OpaquePointer, _ buffer: UnsafePointer<UInt8>, _ length: Int) -> binder_status_t { stub() }
 
 // Scalar writes (API 29)
@@ -172,7 +180,9 @@ func AStatus_getExceptionCode(_ pointer: OpaquePointer) -> binder_exception_t { 
 func AStatus_getServiceSpecificError(_ pointer: OpaquePointer) -> Int32 { stub() }
 func AStatus_getStatus(_ pointer: OpaquePointer) -> binder_status_t { stub() }
 func AStatus_getMessage(_ pointer: OpaquePointer) -> UnsafePointer<CChar>? { stub() }
+@available(Android 30, *)
 func AStatus_getDescription(_ pointer: OpaquePointer) -> UnsafePointer<CChar>? { stub() }
+@available(Android 30, *)
 func AStatus_deleteDescription(_ pointer: UnsafePointer<CChar>) { stub() }
 
 #endif

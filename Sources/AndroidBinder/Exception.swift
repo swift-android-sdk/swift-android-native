@@ -9,6 +9,7 @@
  * Top level exceptions types for Android binder errors, mapping to Java
  * exceptions. Also see Parcel.java.
  */
+@available(Android 29, *)
 public enum Exception: Int32, Sendable, CaseIterable {
 
     /// SecurityException

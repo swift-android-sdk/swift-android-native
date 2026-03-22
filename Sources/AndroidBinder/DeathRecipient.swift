@@ -22,6 +22,7 @@ import Gblic
  *
  * Available since API level 29.
  */
+@available(Android 29, *)
 public final class DeathRecipient {
 
     internal let handle: Handle
@@ -96,23 +97,14 @@ internal extension DeathRecipient {
 
 internal extension DeathRecipient.Handle {
 
-    /**
-     * Available since API level 29.
-     */
     static func create(onDied: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?) -> DeathRecipient.Handle? {
         AIBinder_DeathRecipient_new(onDied).map { .init($0) }
     }
 
-    /**
-     * Available since API level 29.
-     */
     func delete() {
         AIBinder_DeathRecipient_delete(pointer)
     }
 
-    /**
-     * Available since API level 33.
-     */
     @available(Android 33, *)
     func setOnUnlinked(_ onUnlinked: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?) {
         AIBinder_DeathRecipient_setOnUnlinked(pointer, onUnlinked)

@@ -22,6 +22,7 @@ import Gblic
  *
  * Available since API level 29.
  */
+@available(Android 29, *)
 public struct AndroidBinderWeak: ~Copyable {
 
     internal let handle: Handle
@@ -103,30 +104,18 @@ internal extension AndroidBinderWeak {
 
 internal extension AndroidBinderWeak.Handle {
 
-    /**
-     * Available since API level 29.
-     */
     static func create(from binder: AndroidBinder) -> AndroidBinderWeak.Handle? {
-        binder.withUnsafePointer { AIBinder_Weak_new($0) }.map { .init($0) }
+        AIBinder_Weak_new(binder.handle.pointer).map { .init($0) }
     }
 
-    /**
-     * Available since API level 29.
-     */
     func delete() {
         AIBinder_Weak_delete(pointer)
     }
 
-    /**
-     * Available since API level 29.
-     */
     func promote() -> AndroidBinder? {
         AIBinder_Weak_promote(pointer).map { AndroidBinder($0) }
     }
 
-    /**
-     * Available since API level 31.
-     */
     @available(Android 31, *)
     func isLess(than other: AndroidBinderWeak.Handle) -> Bool {
         AIBinder_Weak_lt(pointer, other.pointer)

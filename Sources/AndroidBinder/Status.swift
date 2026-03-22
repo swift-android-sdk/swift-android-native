@@ -21,6 +21,7 @@ import CAndroidNDK
  * out Status for transactions which get executed (don't fail during unStatusing of input arguments
  * or sooner).
  */
+@available(Android 29, *)
 public struct Status: ~Copyable {
 
     internal let handle: Handle

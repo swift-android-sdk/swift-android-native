@@ -22,6 +22,7 @@ import Gblic
  *
  * Available since API level 29.
  */
+@available(Android 29, *)
 public struct BinderClass {
 
     internal let handle: Handle
@@ -157,9 +158,6 @@ internal extension BinderClass {
 
 internal extension BinderClass.Handle {
 
-    /**
-     * Available since API level 29.
-     */
     static func define(
         descriptor: String,
         onCreate: (@convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?)?,
@@ -171,9 +169,6 @@ internal extension BinderClass.Handle {
         }.map { .init($0) }
     }
 
-    /**
-     * Available since API level 31.
-     */
     @available(Android 31, *)
     var descriptor: String {
         guard let cStr = AIBinder_Class_getDescriptor(pointer) else {
@@ -182,18 +177,12 @@ internal extension BinderClass.Handle {
         return String(cString: cStr)
     }
 
-    /**
-     * Available since API level 29.
-     */
     func setOnDump(
         _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
         AIBinder_Class_setOnDump(pointer, handler)
     }
 
-    /**
-     * Available since API level 31.
-     */
     @available(Android 31, *)
     func setHandleShellCommand(
         _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
@@ -201,9 +190,6 @@ internal extension BinderClass.Handle {
         AIBinder_Class_setHandleShellCommand(pointer, handler)
     }
 
-    /**
-     * Available since API level 35.
-     */
     @available(Android 35, *)
     func disableInterfaceTokenHeader() {
         AIBinder_Class_disableInterfaceTokenHeader(pointer)

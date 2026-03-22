@@ -55,6 +55,7 @@ import AndroidSystem
  * that object is local or remote). This correspondance can be broken accidentally if AIBinder_new
  * is erronesouly called to create the same object multiple times.
  */
+@available(Android 29, *)
 public final class AndroidBinder {
 
     internal let handle: Handle
@@ -394,16 +395,10 @@ internal extension AndroidBinder.Handle {
         fatalError()
     }
 
-    /**
-     * Available since API level 29.
-     */
     static func create(class binderClass: BinderClass, userData: UnsafeMutableRawPointer?) -> Handle? {
         AIBinder_new(binderClass.handle.pointer, userData).map { .init($0) }
     }
 
-    /**
-     * Available since API level 30.
-     */
     @available(Android 30, *)
     func getExtension() -> Result<AndroidBinder?, AndroidBinderError> {
         var out: OpaquePointer?
@@ -411,23 +406,14 @@ internal extension AndroidBinder.Handle {
         return status.mapError(out.map { AndroidBinder($0) })
     }
 
-    /**
-     * Available since API level 29.
-     */
     func weakReference() -> AndroidBinderWeak? {
         AIBinder_Weak_new(pointer).map { AndroidBinderWeak($0) }
     }
 
-    /**
-     * Available since API level 29.
-     */
     func linkToDeath(_ recipient: DeathRecipient, cookie: UnsafeMutableRawPointer?) -> Result<Void, AndroidBinderError> {
         AIBinder_linkToDeath(pointer, recipient.handle.pointer, cookie).mapError()
     }
 
-    /**
-     * Available since API level 29.
-     */
     func unlinkToDeath(_ recipient: DeathRecipient, cookie: UnsafeMutableRawPointer?) -> Result<Void, AndroidBinderError> {
         AIBinder_unlinkToDeath(pointer, recipient.handle.pointer, cookie).mapError()
     }
