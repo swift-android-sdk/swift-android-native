@@ -40,16 +40,16 @@ public struct Configuration: ~Copyable {
 public extension Configuration {
 
     /// Creates a new, empty configuration object.
-    init() throws(AndroidFileManagerError) {
+    init() {
         guard let pointer = AConfiguration_new() else {
-            throw .invalidConfiguration
+            fatalError("AConfiguration_new() failed")
         }
         self.init(pointer: pointer)
     }
 
     /// Creates a configuration populated from the current asset manager state.
-    init(assetManager: borrowing AssetManager) throws(AndroidFileManagerError) {
-        try self.init()
+    init(assetManager: borrowing AssetManager) {
+        self.init()
         AConfiguration_fromAssetManager(pointer, assetManager.pointer)
     }
 }
