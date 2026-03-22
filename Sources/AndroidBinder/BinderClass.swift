@@ -147,6 +147,37 @@ public extension BinderClass {
     func disableInterfaceTokenHeader() {
         handle.disableInterfaceTokenHeader()
     }
+
+    #if ANDROID_NDK_VERSION_30
+    /**
+     * Returns the function name associated with the given transaction code for this class.
+     *
+     * Useful for debugging and tracing binder transactions.
+     *
+     * Available since API level 35.
+     *
+     * \param code the transaction code to look up.
+     * \return the function name, or `nil` if no name is associated with the code.
+     */
+    @available(Android 35, *)
+    func transactionName(for code: UInt32) -> String? {
+        handle.transactionName(for: code)
+    }
+
+    /**
+     * Associates a mapping of transaction codes to function names for this class.
+     *
+     * Used to provide human-readable names for transactions in debugging and tracing.
+     *
+     * Available since API level 35.
+     *
+     * \param map an array of function names, indexed by transaction code.
+     */
+    @available(Android 35, *)
+    func setTransactionCodeToFunctionName(_ map: [String?]) {
+        handle.setTransactionCodeToFunctionName(map)
+    }
+    #endif
 }
 
 // MARK: - Supporting Types
@@ -201,4 +232,21 @@ internal extension BinderClass.Handle {
     func disableInterfaceTokenHeader() {
         AIBinder_Class_disableInterfaceTokenHeader(pointer)
     }
+
+    #if ANDROID_NDK_VERSION_30
+    @available(Android 35, *)
+    func transactionName(for code: UInt32) -> String? {
+        AIBinder_Class_getTransactionName(pointer, code).map { String(cString: $0) }
+    }
+
+    @available(Android 35, *)
+    func setTransactionCodeToFunctionName(_ map: [String?]) {
+        var cStrings = map.map { $0.map { strdup($0) } }
+        defer { cStrings.forEach { $0.map { free($0) } } }
+        var ptrs = cStrings.map { $0.map { UnsafePointer($0) } }
+        ptrs.withUnsafeBufferPointer { buffer in
+            AIBinder_Class_associateTransactionCodeToFunctionName(pointer, buffer.baseAddress, map.count)
+        }
+    }
+    #endif
 }

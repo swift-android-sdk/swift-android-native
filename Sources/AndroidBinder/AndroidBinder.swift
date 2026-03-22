@@ -318,6 +318,20 @@ public extension AndroidBinder {
         handle.isLess(than: other.handle)
     }
 
+    #if ANDROID_NDK_VERSION_30
+    /**
+     * Sets the minimum scheduler policy for threads servicing transactions to this binder.
+     *
+     * Available since API level 35.
+     *
+     * \param min the minimum scheduler policy value.
+     */
+    @available(Android 35, *)
+    func setMinSchedulerPolicy(_ min: UInt16) throws(AndroidBinderError) {
+        try handle.setMinSchedulerPolicy(min).get()
+    }
+    #endif
+
     /**
      * Creates a weak reference to this binder.
      *
@@ -509,6 +523,13 @@ internal extension AndroidBinder.Handle {
     func isLess(than other: Handle) -> Bool {
         AIBinder_lt(pointer, other.pointer)
     }
+
+    #if ANDROID_NDK_VERSION_30
+    @available(Android 35, *)
+    func setMinSchedulerPolicy(_ min: UInt16) -> Result<Void, AndroidBinderError> {
+        AIBinder_setMinSchedulerPolicy(pointer, min).mapError()
+    }
+    #endif
 
     func weakReference() -> AndroidBinderWeak? {
         AIBinder_Weak_new(pointer).map { AndroidBinderWeak($0) }

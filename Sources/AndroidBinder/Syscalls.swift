@@ -50,6 +50,14 @@ func AIBinder_Class_setHandleShellCommand(
 @available(Android 33, *)
 func AIBinder_Class_disableInterfaceTokenHeader(_ clazz: OpaquePointer) { stub() }
 
+#if ANDROID_NDK_VERSION_30
+@available(Android 35, *)
+func AIBinder_Class_getTransactionName(_ clazz: OpaquePointer, _ code: UInt32) -> UnsafePointer<CChar>? { stub() }
+
+@available(Android 35, *)
+func AIBinder_Class_associateTransactionCodeToFunctionName(_ clazz: OpaquePointer, _ map: UnsafePointer<UnsafePointer<CChar>?>?, _ length: Int) { stub() }
+#endif
+
 // MARK: - Binder (API 29)
 
 func AIBinder_new(_ clazz: OpaquePointer, _ args: UnsafeMutableRawPointer?) -> OpaquePointer? { stub() }
@@ -76,6 +84,11 @@ func AIBinder_debugGetRefCount(_ binder: OpaquePointer) -> Int32 { stub() }
 func AIBinder_getUserData(_ binder: OpaquePointer) -> UnsafeMutableRawPointer? { stub() }
 @available(Android 31, *)
 func AIBinder_lt(_ lhs: OpaquePointer, _ rhs: OpaquePointer) -> Bool { stub() }
+
+#if ANDROID_NDK_VERSION_30
+@available(Android 35, *)
+func AIBinder_setMinSchedulerPolicy(_ binder: OpaquePointer, _ min: UInt16) -> binder_status_t { stub() }
+#endif
 
 // MARK: - Binder Weak Reference (API 29)
 
