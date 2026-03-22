@@ -99,6 +99,11 @@ let package = Package(
             dependencies: [
                 "AndroidFileManager"
             ]),
+        .testTarget(
+            name: "AndroidConfigurationTests",
+            dependencies: [
+                "AndroidFileManager"
+            ]),
         .target(
             name: "AndroidContext",
             dependencies: [

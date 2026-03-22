@@ -36,9 +36,9 @@ public struct StorageManager: ~Copyable, @unchecked Sendable {
 public extension StorageManager {
 
     /// Creates an `AStorageManager` instance.
-    init() throws(AndroidFileManagerError) {
+    init() {
         guard let handle = Handle.create() else {
-            throw .invalidStorageManager
+            fatalError("AStorageManager_new() failed")
         }
         self.init(handle)
     }
