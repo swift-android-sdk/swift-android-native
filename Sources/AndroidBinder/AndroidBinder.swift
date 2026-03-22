@@ -392,7 +392,12 @@ internal extension AndroidBinder.Handle {
      * \return STATUS_OK if dump succeeds (or if there is nothing to dump)
      */
     func dump(to destination: FileDescriptor, arguments: [String] = []) -> Result<Void, AndroidBinderError> {
-        fatalError()
+        var cStrings = arguments.map { strdup($0) }
+        defer { cStrings.forEach { free($0) } }
+        var ptrs = cStrings.map { UnsafePointer($0) }
+        return ptrs.withUnsafeBufferPointer { buffer in
+            AIBinder_dump(pointer, destination.rawValue, buffer.baseAddress, UInt32(arguments.count)).mapError()
+        }
     }
 
     static func create(class binderClass: BinderClass, userData: UnsafeMutableRawPointer?) -> Handle? {
