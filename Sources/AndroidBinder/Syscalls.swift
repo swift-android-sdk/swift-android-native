@@ -17,27 +17,76 @@ func stub() -> Never {
     fatalError("Not running on Android JVM")
 }
 
-// MARK: - Binder
+// MARK: - Binder Class (API 29)
 
-func AIBinder_new(_ clazz: OpaquePointer, _ args: UnsafeRawPointer?) { stub() }
+func AIBinder_Class_define(
+    _ interfaceDescriptor: UnsafePointer<CChar>?,
+    _ onCreate: (@convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?)?,
+    _ onDestroy: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?,
+    _ onTransact: (@convention(c) (OpaquePointer?, UInt32, OpaquePointer?, OpaquePointer?) -> binder_status_t)?
+) -> OpaquePointer? { stub() }
+
+func AIBinder_Class_setOnDump(
+    _ clazz: OpaquePointer,
+    _ onDump: (@convention(c) (OpaquePointer?, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+) { stub() }
+
+@available(Android 31, *)
+func AIBinder_Class_getDescriptor(_ clazz: OpaquePointer) -> UnsafePointer<CChar>? { stub() }
+
+@available(Android 31, *)
+func AIBinder_Class_setHandleShellCommand(
+    _ clazz: OpaquePointer,
+    _ handleShellCommand: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+) { stub() }
+
+@available(Android 35, *)
+func AIBinder_Class_disableInterfaceTokenHeader(_ clazz: OpaquePointer) { stub() }
+
+// MARK: - Binder (API 29)
+
+func AIBinder_new(_ clazz: OpaquePointer, _ args: UnsafeMutableRawPointer?) -> OpaquePointer? { stub() }
 func AIBinder_decStrong(_ binder: OpaquePointer) { stub() }
 func AIBinder_incStrong(_ binder: OpaquePointer) { stub() }
-func AIBinder_associateClass(_ binder: OpaquePointer, _ binderClass: UnsafeRawPointer) -> binder_status_t { stub() }
-func AIBinder_getClass(_ binder: OpaquePointer) -> UnsafeRawPointer? { stub() }
-func AIBinder_prepareTransaction(_ binder: OpaquePointer) -> OpaquePointer { stub() }
-func AIBinder_transact(_ binder: OpaquePointer, _ transactionCode: Int32, _ inParcel: OpaquePointer, _ outParcel: OpaquePointer?, _ flags: UInt32) -> binder_status_t { stub() }
+func AIBinder_associateClass(_ binder: OpaquePointer, _ binderClass: OpaquePointer) -> Bool { stub() }
+func AIBinder_getClass(_ binder: OpaquePointer) -> OpaquePointer? { stub() }
+func AIBinder_prepareTransaction(_ binder: OpaquePointer, _ outParcel: UnsafeMutablePointer<OpaquePointer?>) -> binder_status_t { stub() }
+func AIBinder_transact(_ binder: OpaquePointer, _ transactionCode: UInt32, _ inParcel: UnsafeMutablePointer<OpaquePointer?>, _ outParcel: UnsafeMutablePointer<OpaquePointer?>, _ flags: UInt32) -> binder_status_t { stub() }
 func AIBinder_setExtension(_ binder: OpaquePointer, _ extensionBinder: OpaquePointer) -> binder_status_t { stub() }
+func AIBinder_getExtension(_ binder: OpaquePointer, _ outExt: UnsafeMutablePointer<OpaquePointer?>) -> binder_status_t { stub() }
 func AIBinder_isRemote(_ binder: OpaquePointer) -> Bool { stub() }
 func AIBinder_isAlive(_ binder: OpaquePointer) -> Bool { stub() }
 func AIBinder_dump(_ binder: OpaquePointer, _ fd: Int32, _ args: UnsafePointer<UnsafePointer<CChar>?>?, _ numArgs: UInt32) -> binder_status_t { stub() }
 func AIBinder_ping(_ binder: OpaquePointer) -> binder_status_t { stub() }
-func AIBinder_linkToDeath(_ binder: OpaquePointer, _ recipient: UnsafeMutablePointer<OpaquePointer>?, _ cookie: UnsafeMutableRawPointer?) -> binder_status_t { stub() }
-func AIBinder_unlinkToDeath(_ binder: OpaquePointer, _ recipient: UnsafeMutablePointer<OpaquePointer>?, _ cookie: UnsafeMutableRawPointer?) -> binder_status_t { stub() }
-func AIBinder_weakRefs(_ binder: OpaquePointer) -> UnsafeMutableRawPointer? { stub() }
+func AIBinder_linkToDeath(_ binder: OpaquePointer, _ recipient: OpaquePointer, _ cookie: UnsafeMutableRawPointer?) -> binder_status_t { stub() }
+func AIBinder_unlinkToDeath(_ binder: OpaquePointer, _ recipient: OpaquePointer, _ cookie: UnsafeMutableRawPointer?) -> binder_status_t { stub() }
 func AIBinder_getCallingUid() -> uid_t { stub() }
 func AIBinder_getCallingPid() -> pid_t { stub() }
 func AIBinder_isHandlingTransaction() -> Bool { stub() }
 func AIBinder_debugGetRefCount(_ binder: OpaquePointer) -> Int32 { stub() }
+
+// MARK: - Binder Weak Reference (API 29)
+
+func AIBinder_Weak_new(_ binder: OpaquePointer) -> OpaquePointer? { stub() }
+func AIBinder_Weak_delete(_ weakBinder: OpaquePointer) { stub() }
+func AIBinder_Weak_promote(_ weakBinder: OpaquePointer) -> OpaquePointer? { stub() }
+
+@available(Android 31, *)
+func AIBinder_Weak_lt(_ lhs: OpaquePointer, _ rhs: OpaquePointer) -> Bool { stub() }
+
+// MARK: - Death Recipient (API 29)
+
+func AIBinder_DeathRecipient_new(
+    _ onBinderDied: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?
+) -> OpaquePointer? { stub() }
+
+func AIBinder_DeathRecipient_delete(_ recipient: OpaquePointer) { stub() }
+
+@available(Android 33, *)
+func AIBinder_DeathRecipient_setOnUnlinked(
+    _ recipient: OpaquePointer,
+    _ onUnlinked: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?
+) { stub() }
 
 // MARK: - Parcel
 
