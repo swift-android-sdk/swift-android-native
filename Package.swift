@@ -86,6 +86,7 @@ let package = Package(
         .target(
             name: "AndroidAssetManager",
             dependencies: [
+                "AndroidSystem",
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
                 .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
             ],
@@ -207,11 +208,35 @@ let package = Package(
                 "AndroidNative"
             ], resources: [.embedInCode("Resources/sample_resource.txt")]),
     ]
-    //swiftLanguageModes: [.v5]
 )
 
 if android {
     // add compatibility import from OSLog to AndroidLogging
     package.targets += [.target(name: "OSLog", dependencies: ["AndroidLogging"])]
     package.targets.first(where: { $0.name == "AndroidLoggingTests" })?.dependencies += [.target(name: "OSLog")]
+}
+
+if ndkBinder {
+    // Add the binder target
+    let binderTarget = Target.target(
+        name: "AndroidBinder",
+        dependencies: [
+            "CAndroidNDK"
+        ],
+        swiftSettings: [
+            ndkVersionDefine,
+            sdkVersionDefine,
+        ],
+        linkerSettings: [
+            .linkedLibrary("binder_ndk", .when(platforms: [.android]))
+        ]
+    )
+    package.targets.append(binderTarget)
+
+    // Add the binder product
+    let binderProduct = Product.library(
+        name: "AndroidBinder",
+        targets: ["AndroidBinder"]
+    )
+    package.products.append(binderProduct)
 }
