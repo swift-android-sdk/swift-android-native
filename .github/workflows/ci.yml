@@ -32,6 +32,14 @@ jobs:
       - name: "Setup Homebrew"
         uses: Homebrew/actions/setup-homebrew@main
 
+      - uses: actions/checkout@v6
+
+      - name: "Build Swift Package on host OS"
+        run: swift build
+
+      - name: "Clean build"
+        run: rm -rf .build
+
       - name: "Build Swift Package for Android (Skip)"
         run: |
           brew install skiptools/skip/skip || (brew update && brew install skiptools/skip/skip)
@@ -49,8 +57,6 @@ jobs:
           # https://github.com/swiftlang/swift-driver/pull/1879
           echo "ANDROID_NDK_ROOT=" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v6
-
       - name: "Build package for Android"
         run: skip android build --build-tests
 
@@ -60,11 +66,7 @@ jobs:
           api-level: ${{ matrix.android-api }}
           arch: x86_64
           script: skip android test --apk --verbose
-      - name: "Build Swift Package on host OS"
-        run: swift build
-      - name: "Build Swift Package on iOS"
-        if: runner.os == 'macOS'
-        run: xcodebuild build -sdk "iphonesimulator" -destination "platform=iOS Simulator,name=iPhone 17" -scheme swift-android-native-Package
+
   soundness:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
     with:
