@@ -18,7 +18,7 @@ import CAndroidNDK
 #endif
 
 /// Wrapper around Android `AStorageManager`.
-public struct StorageManager: ~Copyable {
+public struct StorageManager: ~Copyable, @unchecked Sendable {
 
     internal let handle: Handle
 
@@ -48,11 +48,6 @@ public extension StorageManager {
 
 public extension StorageManager {
 
-    /// Asks Android to mount an OBB container.
-    func mountObb(path: String, key: String? = nil) {
-        handle.mountObb(path: path, key: key)
-    }
-
     /// Asks Android to mount an OBB container, returning the resulting `ObbState`.
     func mountObb(path: String, key: String? = nil) async throws(AndroidFileManagerError) -> ObbState {
         try await withCheckedContinuation { continuation in
@@ -60,11 +55,6 @@ public extension StorageManager {
                 continuation.resume(returning: state)
             }
         }.get()
-    }
-
-    /// Asks Android to unmount an OBB container.
-    func unmountObb(path: String, force: Bool = false) {
-        handle.unmountObb(path: path, force: force)
     }
 
     /// Asks Android to unmount an OBB container, returning the resulting `ObbState`.
@@ -111,18 +101,6 @@ internal extension StorageManager.Handle {
         AStorageManager_delete(pointer)
     }
 
-    func mountObb(path: String, key: String? = nil) {
-        path.withCString { pathCString in
-            if let key {
-                key.withCString { keyCString in
-                    AStorageManager_mountObb(pointer, pathCString, keyCString, nil, nil)
-                }
-            } else {
-                AStorageManager_mountObb(pointer, pathCString, nil, nil, nil)
-            }
-        }
-    }
-
     func mountObb(path: String, key: String? = nil, onComplete: @escaping (String, ObbStateResult) -> Void) {
         let box = Unmanaged.passRetained(ObbCallback(onComplete))
         let thunk: @convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void = { filename, state, data in
@@ -138,12 +116,6 @@ internal extension StorageManager.Handle {
             } else {
                 AStorageManager_mountObb(pointer, pathCString, nil, thunk, box.toOpaque())
             }
-        }
-    }
-
-    func unmountObb(path: String, force: Bool = false) {
-        path.withCString {
-            AStorageManager_unmountObb(pointer, $0, force ? 1 : 0, nil, nil)
         }
     }
 
