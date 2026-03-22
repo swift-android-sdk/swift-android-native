@@ -33,9 +33,36 @@ public enum AndroidFileManagerError: Swift.Error, Equatable, Sendable {
     /// Error seeking within asset (result code).
     case seekAsset(Int64)
 
-    /// Error mounting OBB file (result code).
-    case mountObb(Int32)
+    /// Error with OBB file.
+    case obb(ObbErrorCode)
+}
 
-    /// Error unmounting OBB file (result code).
-    case unmountObb(Int32)
+public extension AndroidFileManagerError {
+
+    struct ObbErrorCode: RawRepresentable, Equatable, Sendable {
+
+        public let rawValue: Int32
+
+        public init(rawValue: Int32) {
+            self.rawValue = rawValue
+        }
+
+        /// An internal error occurred during the operation.
+        public static var `internal`: ObbErrorCode { ObbErrorCode(rawValue: 20) }
+
+        /// The OBB container could not be mounted.
+        public static var couldNotMount: ObbErrorCode { ObbErrorCode(rawValue: 21) }
+
+        /// The OBB container could not be unmounted.
+        public static var couldNotUnmount: ObbErrorCode { ObbErrorCode(rawValue: 22) }
+
+        /// The OBB container is not currently mounted.
+        public static var notMounted: ObbErrorCode { ObbErrorCode(rawValue: 23) }
+
+        /// The OBB container is already mounted.
+        public static var alreadyMounted: ObbErrorCode { ObbErrorCode(rawValue: 24) }
+
+        /// The caller does not have permission to perform the operation.
+        public static var permissionDenied: ObbErrorCode { ObbErrorCode(rawValue: 25) }
+    }
 }
