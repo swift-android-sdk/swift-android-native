@@ -627,7 +627,7 @@ internal var _SEEK_HOLE: CInt { SEEK_HOLE }
 internal var _SEEK_DATA: CInt { SEEK_DATA }
 #endif
 
-#if os(Linux) || os(Android)
+#if os(Android)
 @_alwaysEmitIntoClient
 internal var _EFD_CLOEXEC: CInt { numericCast(EFD_CLOEXEC) }
 
