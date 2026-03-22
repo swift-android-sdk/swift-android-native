@@ -39,9 +39,24 @@ public actor ObbFile {
 
     // MARK: - Initialization
 
+    /// Creates an `ObbFile` for the OBB container at `path`.
+    ///
+    /// - Parameter path: The path to the OBB file.
+    /// - Throws: `AndroidFileManagerError.invalidStorageManager` if the underlying
+    ///   `AStorageManager` instance could not be created.
     public init(path: String) throws(AndroidFileManagerError) {
+        let manager = try StorageManager()
+        self.init(path: path, manager: manager)
+    }
+
+    /// Creates an `ObbFile` for the OBB container at `path`, using the provided `StorageManager`.
+    ///
+    /// - Parameters:
+    ///   - path: The path to the OBB file.
+    ///   - manager: The `StorageManager` to use for mount and unmount operations.
+    public init(path: String, manager: consuming StorageManager) {
         self.path = path
-        self.manager = try StorageManager()
+        self.manager = manager
     }
 
     // MARK: - Methods
