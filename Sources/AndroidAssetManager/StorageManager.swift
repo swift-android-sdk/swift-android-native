@@ -20,14 +20,14 @@ import CAndroidNDK
 /// Wrapper around Android `AStorageManager`.
 public struct StorageManager: ~Copyable {
 
-    internal let pointer: OpaquePointer
+    internal let handle: Handle
 
-    internal init(pointer: OpaquePointer) {
-        self.pointer = pointer
+    internal init(_ handle: Handle) {
+        self.handle = handle
     }
 
     deinit {
-        AStorageManager_delete(pointer)
+        handle.delete()
     }
 }
 
@@ -37,10 +37,10 @@ public extension StorageManager {
 
     /// Creates an `AStorageManager` instance.
     init() throws(AndroidFileManagerError) {
-        guard let pointer = AStorageManager_new() else {
+        guard let handle = Handle.create() else {
             throw .invalidStorageManager
         }
-        self.init(pointer: pointer)
+        self.init(handle)
     }
 }
 
@@ -49,6 +49,64 @@ public extension StorageManager {
 public extension StorageManager {
 
     /// Asks Android to mount an OBB container.
+    func mountObb(path: String, key: String? = nil) {
+        handle.mountObb(path: path, key: key)
+    }
+
+    /// Asks Android to mount an OBB container, invoking `onComplete` when done.
+    ///
+    /// The callback receives the OBB path and the resulting `ObbState`.
+    func mountObb(path: String, key: String? = nil, onComplete: @escaping (String, ObbState) -> Void) {
+        handle.mountObb(path: path, key: key, onComplete: onComplete)
+    }
+
+    /// Asks Android to unmount an OBB container.
+    func unmountObb(path: String, force: Bool = false) {
+        handle.unmountObb(path: path, force: force)
+    }
+
+    /// Asks Android to unmount an OBB container, invoking `onComplete` when done.
+    ///
+    /// The callback receives the OBB path and the resulting `ObbState`.
+    func unmountObb(path: String, force: Bool = false, onComplete: @escaping (String, ObbState) -> Void) {
+        handle.unmountObb(path: path, force: force, onComplete: onComplete)
+    }
+
+    /// Returns whether the OBB at `path` is mounted.
+    func isObbMounted(path: String) -> Bool {
+        handle.isObbMounted(path: path)
+    }
+
+    /// Returns the mounted OBB path for a raw OBB path.
+    func mountedObbPath(for path: String) -> String? {
+        handle.mountedObbPath(for: path)
+    }
+}
+
+// MARK: - Supporting Types
+
+internal extension StorageManager {
+
+    struct Handle {
+
+        let pointer: OpaquePointer
+
+        init(_ pointer: OpaquePointer) {
+            self.pointer = pointer
+        }
+    }
+}
+
+internal extension StorageManager.Handle {
+
+    static func create() -> StorageManager.Handle? {
+        AStorageManager_new().map { .init($0) }
+    }
+
+    func delete() {
+        AStorageManager_delete(pointer)
+    }
+
     func mountObb(path: String, key: String? = nil) {
         path.withCString { pathCString in
             if let key {
@@ -61,9 +119,6 @@ public extension StorageManager {
         }
     }
 
-    /// Asks Android to mount an OBB container, invoking `onComplete` when done.
-    ///
-    /// The callback receives the OBB path and the resulting `ObbState`.
     func mountObb(path: String, key: String? = nil, onComplete: @escaping (String, ObbState) -> Void) {
         let box = Unmanaged.passRetained(ObbCallback(onComplete))
         let thunk: @convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void = { filename, state, data in
@@ -82,16 +137,12 @@ public extension StorageManager {
         }
     }
 
-    /// Asks Android to unmount an OBB container.
     func unmountObb(path: String, force: Bool = false) {
         path.withCString {
             AStorageManager_unmountObb(pointer, $0, force ? 1 : 0, nil, nil)
         }
     }
 
-    /// Asks Android to unmount an OBB container, invoking `onComplete` when done.
-    ///
-    /// The callback receives the OBB path and the resulting `ObbState`.
     func unmountObb(path: String, force: Bool = false, onComplete: @escaping (String, ObbState) -> Void) {
         let box = Unmanaged.passRetained(ObbCallback(onComplete))
         let thunk: @convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void = { filename, state, data in
@@ -104,14 +155,12 @@ public extension StorageManager {
         }
     }
 
-    /// Returns whether the OBB at `path` is mounted.
     func isObbMounted(path: String) -> Bool {
         path.withCString { rawPath in
             AStorageManager_isObbMounted(pointer, rawPath) != 0
         }
     }
 
-    /// Returns the mounted OBB path for a raw OBB path.
     func mountedObbPath(for path: String) -> String? {
         path.withCString { rawPath in
             guard let cString = AStorageManager_getMountedObbPath(pointer, rawPath) else {
@@ -122,7 +171,7 @@ public extension StorageManager {
     }
 }
 
-// MARK: - Supporting Types
+// MARK: - ObbCallback
 
 /// Box for bridging a Swift OBB callback to a C function pointer.
 private final class ObbCallback {
