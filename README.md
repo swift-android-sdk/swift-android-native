@@ -257,6 +257,114 @@ Add the `AndroidLooper` module as a conditional dependency for any targets that 
 ])
 ```
 
+# AndroidManifest
+
+This module provides access to Android [permission APIs](https://developer.android.com/ndk/reference/group/permission) for native Swift on Android.
+
+## Installation
+
+### Swift Package Manager
+
+Add the `AndroidManifest` module as a conditional dependency for any targets that need it:
+
+```swift
+.target(name: "MyTarget", dependencies: [
+    .product(name: "AndroidManifest", package: "swift-android-native", condition: .when(platforms: [.android]))
+])
+```
+
+## Usage
+
+```swift
+import AndroidManifest
+
+// Check whether the app has been granted a permission
+if Permission.readExternalStorage.isGranted {
+    // access storage
+}
+
+// Check with explicit PID/UID (requires Android 31+)
+let status = try Permission.camera.check()
+```
+
+
+# AndroidInput
+
+This module provides an [Input](https://developer.android.com/ndk/reference/group/input) API for native Swift on Android,
+including input queues, input events, game controller state, and key codes.
+
+## Installation
+
+### Swift Package Manager
+
+Add the `AndroidInput` module as a conditional dependency for any targets that need it:
+
+```swift
+.target(name: "MyTarget", dependencies: [
+    .product(name: "AndroidInput", package: "swift-android-native", condition: .when(platforms: [.android]))
+])
+```
+
+## Usage
+
+```swift
+import AndroidInput
+import AndroidLooper
+
+let looper = Looper.forThread()
+inputQueue.attachLooper(looper, identifier: 1, callback: nil, data: nil)
+
+var event: InputEvent?
+if inputQueue.hasEvents() > 0 {
+    inputQueue.getEvent(&event)
+    // handle event
+    if let event {
+        inputQueue.finishEvent(event, handled: true)
+    }
+}
+```
+
+
+# AndroidHardware
+
+This module provides a [Sensor](https://developer.android.com/ndk/reference/group/sensor) API for native Swift on Android.
+
+## Installation
+
+### Swift Package Manager
+
+Add the `AndroidHardware` module as a conditional dependency for any targets that need it:
+
+```swift
+.target(name: "MyTarget", dependencies: [
+    .product(name: "AndroidHardware", package: "swift-android-native", condition: .when(platforms: [.android]))
+])
+```
+
+## Usage
+
+```swift
+import AndroidHardware
+import AndroidLooper
+
+let manager = try SensorManager(package: "com.example.myapp")
+
+// List all available sensors
+let sensors = manager.sensors
+
+// Get the default accelerometer
+if let accelerometer = manager.defaultSensor(type: .accelerometer) {
+    let looper = Looper.forThread()
+    let queue = try manager.createEventQueue(looper: looper)
+    try queue.enableSensor(accelerometer)
+
+    var events = [SensorEvent](repeating: .init(), count: 8)
+    let count = queue.getEvents(&events)
+    // process events[0..<count]
+}
+```
+
+
 # AndroidBootstrap
 
 The [AndroidBootstrap] class is part of the top-level [AndroidNative] module, and provides
