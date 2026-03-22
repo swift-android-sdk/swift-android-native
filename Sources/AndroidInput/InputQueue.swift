@@ -25,19 +25,19 @@ import AndroidLooper
 ///
 /// [See Also](https://developer.android.com/ndk/reference/group/input#ainputqueue)
 public struct InputQueue: ~Copyable {
-    
+
     // MARK: - Properties
-    
+
     internal let pointer: OpaquePointer
-    
+
     // MARK: - Initialization
-    
+
     internal init(_ pointer: OpaquePointer) {
         self.pointer = pointer
     }
-    
+
     // MARK: - Methods
-    
+
     /// Add this input queue to a looper for processing.
     ///
     /// - Parameters:
@@ -55,19 +55,19 @@ public struct InputQueue: ~Copyable {
             AInputQueue_attachLooper(self.pointer, looperPointer, identifier, callback, data)
         }
     }
-    
+
     /// Remove the input queue from the looper it is currently attached to.
     public func detachLooper() {
         AInputQueue_detachLooper(pointer)
     }
-    
+
     /// Returns true if there are one or more events available in the input queue.
     ///
     /// Returns 1 if the queue has events; 0 if it does not have events; and a negative value if there is an error.
     public func hasEvents() -> Int32 {
         AInputQueue_hasEvents(pointer)
     }
-    
+
     /// Returns the next available event from the queue.
     ///
     /// Returns a negative value if no events are available or an error has occurred, otherwise returns a non-negative value indicating the number of events available.
@@ -85,7 +85,7 @@ public struct InputQueue: ~Copyable {
         }
         return result
     }
-    
+
     /// Sends the key for standard pre-dispatching.
     ///
     /// Returns 0 if pre-dispatch was completed, 1 if the event should be pre-dispatched, or a negative value on error.
@@ -96,7 +96,7 @@ public struct InputQueue: ~Copyable {
     public func preDispatchEvent(_ event: borrowing InputEvent) -> Int32 {
         AInputQueue_preDispatchEvent(pointer, event.pointer)
     }
-    
+
     /// Report that dispatching has finished with the given event.
     ///
     /// This must be called after receiving an event with `getEvent()`.

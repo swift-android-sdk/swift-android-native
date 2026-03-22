@@ -755,7 +755,7 @@ public extension KeyCode {
 
     /// Recent Apps key.
     static var recentApps: KeyCode { KeyCode(rawValue: AKEYCODE_RECENT_APPS) }
-    
+
     // MARK: System Navigation Gestures
 
     /// System Navigation Up key.

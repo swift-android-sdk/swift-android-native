@@ -21,9 +21,9 @@ import CAndroidNDK
 /// Swift wrapper for the Android Game Controller (Paddleboat) C API.
 @MainActor
 public struct GameController: ~Copyable {
-    
+
     let environment: JNIEnvironment
-    
+
     public init(context: jobject, environment: JNIEnvironment) throws {
         let result = Paddleboat_init(environment, context)
         guard result == 0 else {
@@ -34,29 +34,29 @@ public struct GameController: ~Copyable {
         }
         self.environment = environment
     }
-    
+
     deinit {
         Paddleboat_destroy(environment)
     }
-    
+
     public func update() {
         Paddleboat_update(environment)
     }
-    
+
     // MARK: - Back button
     public static func setBackButtonConsumed(_ consume: Bool) {
         Paddleboat_setBackButtonConsumed(consume)
     }
-    
+
     public static func isBackButtonConsumed() -> Bool {
         Paddleboat_getBackButtonConsumed()
     }
-    
+
     // MARK: - Controller Info / Data
     public static func getControllerStatus(index: Int32) -> ControllerStatus {
         ControllerStatus(rawValue: Paddleboat_getControllerStatus(index)) ?? .inactive
     }
-    
+
     public static func getControllerName(index: Int32, bufferSize: Int = 128) -> (ErrorCode, String) {
         var buffer = [CChar](repeating: 0, count: bufferSize)
         let err = Paddleboat_getControllerName(index, Int32(buffer.count), &buffer)
@@ -64,7 +64,7 @@ public struct GameController: ~Copyable {
         let name = buffer.withUnsafeBufferPointer { String(cString: $0.baseAddress!) }
         return (code, name)
     }
-    
+
     // MARK: - Lights / Vibration
     @discardableResult
     public func setControllerLight(index: Int32, type: LightType, data: UInt32) -> ErrorCode {
@@ -74,13 +74,14 @@ public struct GameController: ~Copyable {
 
     @discardableResult
     public func setControllerVibration(index: Int32, vibration: VibrationData) -> ErrorCode {
-        var cData = Paddleboat_Vibration_Data(duration_ms: vibration.durationMs,
-                                              left_motor_intensity: vibration.intensityLeft,
-                                              right_motor_intensity: vibration.intensityRight)
+        var cData = Paddleboat_Vibration_Data(
+            duration_ms: vibration.durationMs,
+            left_motor_intensity: vibration.intensityLeft,
+            right_motor_intensity: vibration.intensityRight)
         let err = Paddleboat_setControllerVibrationData(index, &cData, environment)
         return ErrorCode(rawValue: err) ?? .noError
     }
-    
+
     // MARK: - Motion
     public static func getIntegratedMotionSensorFlags() -> IntegratedMotionSensorFlags {
         IntegratedMotionSensorFlags(rawValue: Paddleboat_getIntegratedMotionSensorFlags())
@@ -90,10 +91,10 @@ public struct GameController: ~Copyable {
 // MARK: - Supporting Types
 
 public extension GameController {
-    
+
     // MARK: - Version / Constants
     public static var maxControllers: Int32 { 8 }
-    
+
     // MARK: - Error
     public enum Error: Int32, Swift.Error {
         case noError = 0
@@ -122,44 +123,44 @@ public extension GameController {
     public struct Buttons: OptionSet, Sendable {
         public let rawValue: UInt32
         public init(rawValue: UInt32) { self.rawValue = rawValue }
-        public static let a            = Buttons(rawValue: 1 << 0)
-        public static let b            = Buttons(rawValue: 1 << 1)
-        public static let x            = Buttons(rawValue: 1 << 2)
-        public static let y            = Buttons(rawValue: 1 << 3)
-        public static let l1           = Buttons(rawValue: 1 << 4)
-        public static let r1           = Buttons(rawValue: 1 << 5)
-        public static let l2           = Buttons(rawValue: 1 << 6)
-        public static let r2           = Buttons(rawValue: 1 << 7)
-        public static let l3           = Buttons(rawValue: 1 << 8)
-        public static let r3           = Buttons(rawValue: 1 << 9)
-        public static let dpadUp       = Buttons(rawValue: 1 << 10)
-        public static let dpadDown     = Buttons(rawValue: 1 << 11)
-        public static let dpadLeft     = Buttons(rawValue: 1 << 12)
-        public static let dpadRight    = Buttons(rawValue: 1 << 13)
-        public static let start        = Buttons(rawValue: 1 << 14)
-        public static let select       = Buttons(rawValue: 1 << 15)
-        public static let system       = Buttons(rawValue: 1 << 16)
-        public static let touchpad     = Buttons(rawValue: 1 << 17)
-        public static let aux1         = Buttons(rawValue: 1 << 18)
-        public static let aux2         = Buttons(rawValue: 1 << 19)
-        public static let aux3         = Buttons(rawValue: 1 << 20)
-        public static let aux4         = Buttons(rawValue: 1 << 21)
+        public static let a = Buttons(rawValue: 1 << 0)
+        public static let b = Buttons(rawValue: 1 << 1)
+        public static let x = Buttons(rawValue: 1 << 2)
+        public static let y = Buttons(rawValue: 1 << 3)
+        public static let l1 = Buttons(rawValue: 1 << 4)
+        public static let r1 = Buttons(rawValue: 1 << 5)
+        public static let l2 = Buttons(rawValue: 1 << 6)
+        public static let r2 = Buttons(rawValue: 1 << 7)
+        public static let l3 = Buttons(rawValue: 1 << 8)
+        public static let r3 = Buttons(rawValue: 1 << 9)
+        public static let dpadUp = Buttons(rawValue: 1 << 10)
+        public static let dpadDown = Buttons(rawValue: 1 << 11)
+        public static let dpadLeft = Buttons(rawValue: 1 << 12)
+        public static let dpadRight = Buttons(rawValue: 1 << 13)
+        public static let start = Buttons(rawValue: 1 << 14)
+        public static let select = Buttons(rawValue: 1 << 15)
+        public static let system = Buttons(rawValue: 1 << 16)
+        public static let touchpad = Buttons(rawValue: 1 << 17)
+        public static let aux1 = Buttons(rawValue: 1 << 18)
+        public static let aux2 = Buttons(rawValue: 1 << 19)
+        public static let aux3 = Buttons(rawValue: 1 << 20)
+        public static let aux4 = Buttons(rawValue: 1 << 21)
     }
-    
+
     public enum LightType: Int32 {
         case playerNumber = 0
         case rgb = 1
     }
-    
+
     public struct IntegratedMotionSensorFlags: OptionSet, Sendable {
         public let rawValue: UInt32
         public init(rawValue: UInt32) { self.rawValue = rawValue }
-        public static let none          = IntegratedMotionSensorFlags([])
+        public static let none = IntegratedMotionSensorFlags([])
         public static let accelerometer = IntegratedMotionSensorFlags(rawValue: 0x00000001)
-        public static let gyroscope     = IntegratedMotionSensorFlags(rawValue: 0x00000002)
-        public static let indexFlag     = IntegratedMotionSensorFlags(rawValue: 0x40000000)
+        public static let gyroscope = IntegratedMotionSensorFlags(rawValue: 0x00000002)
+        public static let indexFlag = IntegratedMotionSensorFlags(rawValue: 0x40000000)
     }
-    
+
     public struct VibrationData {
         public var durationMs: Int32
         public var intensityLeft: Float

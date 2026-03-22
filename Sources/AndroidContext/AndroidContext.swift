@@ -96,15 +96,11 @@ public class AndroidContext: @unchecked Sendable {
         do {
             jvm = try JavaVirtualMachine.shared()
             env = try jvm.environment()
-        } catch {
+        } catch let error as JavaVirtualMachine.VMError {
             return .failure(.virtualMachine(error))
+        } catch {
+            fatalError("Non-JavaVirtualMachine.VMError error thrown")
         }
-        // TODO: needs https://github.com/swiftlang/swift-java-jni-core/pull/12
-        // } catch let error as JavaVirtualMachine.VMError {
-        //     return .failure(.virtualMachine(error))
-        // } catch {
-        //     fatalError("Non-JavaVirtualMachine.VMError error thrown")
-        // }
         let jni: JNINativeInterface = env.pointee!.pointee
 
         // if we have provided a manual context jobject, then we just use that and skip trying to access the factory

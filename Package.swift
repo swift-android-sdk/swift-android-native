@@ -146,7 +146,7 @@ let package = Package(
             ],
             swiftSettings: [
               ndkVersionDefine,
-              sdkVersionDefine
+                sdkVersionDefine,
             ],
             linkerSettings: [
                 .linkedLibrary("android", .when(platforms: [.android]))
@@ -156,11 +156,11 @@ let package = Package(
             name: "AndroidInput",
             dependencies: [
                 "CAndroidNDK",
-                "AndroidLooper"
+                "AndroidLooper",
             ],
             swiftSettings: [
               ndkVersionDefine,
-              sdkVersionDefine
+                sdkVersionDefine,
             ],
             linkerSettings: [
                 .linkedLibrary("android", .when(platforms: [.android]))
@@ -170,11 +170,11 @@ let package = Package(
             name: "AndroidHardware",
             dependencies: [
                 "CAndroidNDK",
-                "AndroidLooper"
+                "AndroidLooper",
             ],
             swiftSettings: [
               ndkVersionDefine,
-              sdkVersionDefine
+                sdkVersionDefine,
             ],
             linkerSettings: [
                 .linkedLibrary("android", .when(platforms: [.android]))

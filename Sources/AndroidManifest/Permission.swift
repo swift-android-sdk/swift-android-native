@@ -14,17 +14,16 @@
 
 /// Android Manifest Permission
 public struct Permission: RawRepresentable, Equatable, Hashable, Codable, Sendable {
-    
+
     public let rawValue: String
-    
+
     public init(rawValue: String) {
         self.rawValue = rawValue
     }
 }
 
-
 public extension Permission {
-    
+
     /// Android manifest permission.
     /// - Constant Value: `android.permission.ACCEPT_HANDOVER`
     /// - Java Constant: `Manifest.permission.ACCEPT_HANDOVER`

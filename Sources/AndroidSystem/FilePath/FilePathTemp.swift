@@ -33,21 +33,21 @@
 /// executes `body`, passing in the path of the created directory, then
 /// deletes the directory and all of its contents before returning.
 internal func withTemporaryFilePath<R>(
-  basename: FilePath.Component,
-  _ body: (FilePath) throws -> R
+    basename: FilePath.Component,
+    _ body: (FilePath) throws -> R
 ) throws -> R {
-  let temporaryDir = try createUniqueTemporaryDirectory(basename: basename)
-  defer {
-    try? _recursiveRemove(at: temporaryDir)
-  }
+    let temporaryDir = try createUniqueTemporaryDirectory(basename: basename)
+    defer {
+        try? _recursiveRemove(at: temporaryDir)
+    }
 
-  return try body(temporaryDir)
+    return try body(temporaryDir)
 }
 
 // MARK: - Internals
 
 fileprivate let base64 = Array<UInt8>(
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".utf8
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".utf8
 )
 
 /// Create a directory that is only accessible to the current user.
@@ -59,17 +59,17 @@ fileprivate let base64 = Array<UInt8>(
 /// This function will throw if there is an error, except if the error
 /// is that the directory exists, in which case it returns `false`.
 fileprivate func makeLockedDownDirectory(at path: FilePath) throws -> Bool {
-  return try path.withPlatformString {
-    if system_mkdir($0, 0o700) == 0 {
-      return true
+    return try path.withPlatformString {
+        if system_mkdir($0, 0o700) == 0 {
+            return true
+        }
+        let err = system_errno
+        if err == Errno.fileExists.rawValue {
+            return false
+        } else {
+            throw Errno(rawValue: err)
+        }
     }
-    let err = system_errno
-    if err == Errno.fileExists.rawValue {
-      return false
-    } else {
-      throw Errno(rawValue: err)
-    }
-  }
 }
 
 /// Generate a random string of base64 filename safe characters.
@@ -78,12 +78,12 @@ fileprivate func makeLockedDownDirectory(at path: FilePath) throws -> Bool {
 ///   - length: The number of characters in the returned string.
 /// - Returns: A random string of length `length`.
 fileprivate func createRandomString(length: Int) -> String {
-  return String(
-    decoding: (0..<length).map{
-      _ in base64[Int.random(in: 0..<64)]
-    },
-    as: UTF8.self
-  )
+    return String(
+        decoding: (0..<length).map {
+            _ in base64[Int.random(in: 0..<64)]
+        },
+        as: UTF8.self
+    )
 }
 
 /// Given a base name, create a uniquely named temporary directory.
@@ -96,16 +96,16 @@ fileprivate func createRandomString(length: Int) -> String {
 /// starts with `basename`, followed by a `.` and then a random
 /// string of characters.
 fileprivate func createUniqueTemporaryDirectory(
-  basename: FilePath.Component
+    basename: FilePath.Component
 ) throws -> FilePath {
-  var tempDir = try _getTemporaryDirectory()
-  tempDir.append(basename)
+    var tempDir = try _getTemporaryDirectory()
+    tempDir.append(basename)
 
-  while true {
-    tempDir.extension = createRandomString(length: 16)
+    while true {
+        tempDir.extension = createRandomString(length: 16)
 
-    if try makeLockedDownDirectory(at: tempDir) {
-      return tempDir
+        if try makeLockedDownDirectory(at: tempDir) {
+            return tempDir
+        }
     }
-  }
 }

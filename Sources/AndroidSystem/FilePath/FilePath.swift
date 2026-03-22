@@ -51,54 +51,54 @@
 /// However, the rules for path equivalence
 /// are file-system–specific and have additional considerations
 /// like case insensitivity, Unicode normalization, and symbolic links.
-@available(/*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
+@available( /*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
 public struct FilePath: Sendable {
-  // TODO(docs): Section on all the new syntactic operations, lexical normalization, decomposition,
-  // components, etc.
-  internal var _storage: SystemString
+    // TODO(docs): Section on all the new syntactic operations, lexical normalization, decomposition,
+    // components, etc.
+    internal var _storage: SystemString
 
-  /// Creates an empty, null-terminated path.
-  public init() {
-    self._storage = SystemString()
-    _invariantCheck()
-  }
+    /// Creates an empty, null-terminated path.
+    public init() {
+        self._storage = SystemString()
+        _invariantCheck()
+    }
 
-  // In addition to the empty init, this init will properly normalize
-  // separators. All other initializers should be implemented by
-  // ultimately deferring to a normalizing init.
-  internal init(_ str: SystemString) {
-    self._storage = str
-    self._normalizeSeparators()
-    _invariantCheck()
-  }
+    // In addition to the empty init, this init will properly normalize
+    // separators. All other initializers should be implemented by
+    // ultimately deferring to a normalizing init.
+    internal init(_ str: SystemString) {
+        self._storage = str
+        self._normalizeSeparators()
+        _invariantCheck()
+    }
 }
 
-@available(/*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
+@available( /*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
 extension FilePath {
-  /// The length of the file path, excluding the null terminator.
-  public var length: Int { _storage.length }
+    /// The length of the file path, excluding the null terminator.
+    public var length: Int { _storage.length }
 }
 
-@available(/*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
+@available( /*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
 extension FilePath: Hashable {}
 
-@available(/*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
+@available( /*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
 extension FilePath: Codable {
-  // Encoder is synthesized; it probably should have been explicit and used
-  // a single-value container, but making that change now is somewhat risky.
+    // Encoder is synthesized; it probably should have been explicit and used
+    // a single-value container, but making that change now is somewhat risky.
 
-  // Decoder is written explicitly to ensure that we validate invariants on
-  // untrusted input.
-  public init(from decoder: any Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    self._storage = try container.decode(SystemString.self, forKey: ._storage)
-    guard _invariantsSatisfied() else {
-      throw DecodingError.dataCorruptedError(
-        forKey: ._storage,
-        in: container,
-        debugDescription:
-          "Encoding does not satisfy the invariants of FilePath"
-      )
+    // Decoder is written explicitly to ensure that we validate invariants on
+    // untrusted input.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self._storage = try container.decode(SystemString.self, forKey: ._storage)
+        guard _invariantsSatisfied() else {
+            throw DecodingError.dataCorruptedError(
+                forKey: ._storage,
+                in: container,
+                debugDescription:
+                    "Encoding does not satisfy the invariants of FilePath"
+            )
+        }
     }
-  }
 }

@@ -37,11 +37,11 @@ public typealias ALooper_callbackFunc = @convention(c) (Int32, Int32, UnsafeMuta
  *   timestamp(8) + data_union(64) + flags(4) + reserved1(12)
  */
 public struct ASensorEvent: Sendable {
-    public var version: Int32       // sizeof(struct ASensorEvent)
-    public var sensor: Int32        // sensor identifier
-    public var type: Int32          // sensor type
+    public var version: Int32 // sizeof(struct ASensorEvent)
+    public var sensor: Int32 // sensor identifier
+    public var type: Int32 // sensor type
     public var reserved0: Int32
-    public var timestamp: Int64     // nanoseconds
+    public var timestamp: Int64 // nanoseconds
     // Data union: largest member is float[16] = 64 bytes.
     // Represented here as eight UInt64 to keep the layout correct
     // without needing to replicate the full C union hierarchy.

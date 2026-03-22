@@ -58,7 +58,7 @@ public extension SensorManager {
         var list: UnsafePointer<OpaquePointer?>?
         let count = ASensorManager_getSensorList(pointer, &list)
         guard count > 0, let list else { return [] }
-        return (0 ..< Int(count)).compactMap { index in
+        return (0..<Int(count)).compactMap { index in
             guard let pointer = list[index] else { return nil }
             return Sensor(pointer)
         }
