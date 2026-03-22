@@ -183,6 +183,29 @@ public extension AndroidBinder {
     var isAlive: Bool {
         handle.isAlive
     }
+
+    /**
+     * The class this binder was constructed with or associated with.
+     *
+     * Available since API level 29.
+     *
+     * \return the class associated with this binder, or `nil` if none has been associated.
+     */
+    @available(Android 29, *)
+    var binderClass: BinderClass? {
+        handle.binderClass
+    }
+
+    /**
+     * User data returned from `onCreate` when this local binder was created.
+     * Always `nil` for remote binders.
+     *
+     * Available since API level 29.
+     */
+    @available(Android 29, *)
+    var userData: UnsafeMutableRawPointer? {
+        handle.userData
+    }
 }
 
 // MARK: - Methods
@@ -228,9 +251,27 @@ public extension AndroidBinder {
     }
 
     /**
+     * Associates this binder object with the given class.
+     *
+     * This is useful for a binder received from a remote process to verify
+     * that it implements the expected interface before using it.
+     *
+     * Available since API level 29.
+     *
+     * \param binderClass the class to associate with this binder.
+     *
+     * \return true if the binder has the class and the association was successful.
+     */
+    @available(Android 29, *)
+    @discardableResult
+    func associate(class binderClass: BinderClass) -> Bool {
+        handle.associate(class: binderClass)
+    }
+
+    /**
      * Gets the extension registered on this binder.
      *
-     * See also `setExtension`.
+     * See also `setExtension(_:)`.
      *
      * Available since API level 30.
      *
@@ -239,6 +280,35 @@ public extension AndroidBinder {
     @available(Android 30, *)
     func getExtension() throws(AndroidBinderError) -> AndroidBinder? {
         try handle.getExtension().get()
+    }
+
+    /**
+     * Sets an extension on this binder. Must be called before the binder is passed to
+     * another thread. Only valid on local binders.
+     *
+     * See also `getExtension()`.
+     *
+     * Available since API level 30.
+     *
+     * \param extension the binder to attach as an extension.
+     */
+    @available(Android 30, *)
+    func setExtension(_ extension: AndroidBinder) throws(AndroidBinderError) {
+        try handle.setExtension(`extension`).get()
+    }
+
+    /**
+     * Whether this binder compares less than another, providing a stable ordering
+     * for use in sorted collections.
+     *
+     * Two binders refer to the same object when neither `a.isLess(than: b)`
+     * nor `b.isLess(than: a)` is true.
+     *
+     * Available since API level 31.
+     */
+    @available(Android 31, *)
+    func isLess(than other: AndroidBinder) -> Bool {
+        handle.isLess(than: other.handle)
     }
 
     /**
@@ -404,11 +474,33 @@ internal extension AndroidBinder.Handle {
         AIBinder_new(binderClass.handle.pointer, userData).map { .init($0) }
     }
 
+    var binderClass: BinderClass? {
+        AIBinder_getClass(pointer).map { BinderClass($0) }
+    }
+
+    var userData: UnsafeMutableRawPointer? {
+        AIBinder_getUserData(pointer)
+    }
+
+    func associate(class binderClass: BinderClass) -> Bool {
+        AIBinder_associateClass(pointer, binderClass.handle.pointer)
+    }
+
     @available(Android 30, *)
     func getExtension() -> Result<AndroidBinder?, AndroidBinderError> {
         var out: OpaquePointer?
         let status = AIBinder_getExtension(pointer, &out)
         return status.mapError(out.map { AndroidBinder($0) })
+    }
+
+    @available(Android 30, *)
+    func setExtension(_ extension: AndroidBinder) -> Result<Void, AndroidBinderError> {
+        AIBinder_setExtension(pointer, `extension`.handle.pointer).mapError()
+    }
+
+    @available(Android 31, *)
+    func isLess(than other: Handle) -> Bool {
+        AIBinder_lt(pointer, other.pointer)
     }
 
     func weakReference() -> AndroidBinderWeak? {
