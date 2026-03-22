@@ -86,6 +86,7 @@ let package = Package(
         .target(
             name: "AndroidAssetManager",
             dependencies: [
+                "AndroidSystem",
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
                 .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
             ],
