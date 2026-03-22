@@ -96,10 +96,8 @@ public class AndroidContext: @unchecked Sendable {
         do {
             jvm = try JavaVirtualMachine.shared()
             env = try jvm.environment()
-        } catch let error as JavaVirtualMachine.VMError {
-            return .failure(.virtualMachine(error))
         } catch {
-            fatalError("Non-JavaVirtualMachine.VMError error thrown")
+            return .failure(.virtualMachine(error))
         }
         let jni: JNINativeInterface = env.pointee!.pointee
 
@@ -107,7 +105,7 @@ public class AndroidContext: @unchecked Sendable {
         if let contextPointer = contextPointer {
             return .success(AndroidContext(pointer: contextPointer, env: env))
         }
-
+        
         // alternative fallback mechanism:
         //contextFactory = "android.app.AppGlobals.getInitialApplication()Landroid/app/Application;"
 
