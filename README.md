@@ -207,7 +207,7 @@ let context = try AndroidContext.application
 ```
 
 
-# AndroidAssetManager
+# AndroidFileManager
 
 This module provides an [AssetManager](https://developer.android.com/ndk/reference/group/asset) API for native Swift on Android.
 
@@ -215,11 +215,11 @@ This module provides an [AssetManager](https://developer.android.com/ndk/referen
 
 ### Swift Package Manager
 
-Add the `AndroidAssetManager` module as a conditional dependency for any targets that need it:
+Add the `AndroidFileManager` module as a conditional dependency for any targets that need it:
 
 ```swift
 .target(name: "MyTarget", dependencies: [
-    .product(name: "AndroidAssetManager", package: "swift-android-native", condition: .when(platforms: [.android]))
+    .product(name: "AndroidFileManager", package: "swift-android-native", condition: .when(platforms: [.android]))
 ])
 ```
 

@@ -25,7 +25,7 @@ import func Darwin.getenv
 import func Glibc.getenv
 #endif
 import SwiftJavaJNICore
-public import AndroidAssetManager
+public import AndroidFileManager
 
 /// A native reference to
 /// [android.content.Context](https://developer.android.com/reference/android/content/Context)
@@ -33,7 +33,7 @@ public import AndroidAssetManager
 @available(iOS, unavailable)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
-public class AndroidContext: @unchecked Sendable {
+public final class AndroidContext: @unchecked Sendable {
     /// The JNI signature for the method to invoke to obtain the global Context.
     /// This can be manually changed before initialization to a different signature.
     /// It must be a zero-argument static fuction that returns an instance of `android.content.Context`.
@@ -54,9 +54,19 @@ public class AndroidContext: @unchecked Sendable {
     private let env: JNIEnvironment
 
     /// Initialize from an existing JNI object pointer and environment.
-    public init(pointer: jobject, env: JNIEnvironment) {
+    internal init(pointer: jobject, env: JNIEnvironment) {
         self.pointer = pointer
         self.env = env
+    }
+
+    /// Creates an `AndroidContext` from a Java `android.content.Context` object.
+    ///
+    /// - Parameters:
+    ///   - javaObject: A JNI reference to an `android.content.Context` (or subclass).
+    ///   - environment: The JNI environment for the current thread.
+    /// - Returns: An `AndroidContext` wrapping the given Java object.
+    public static func fromJava(_ javaObject: jobject, environment: JNIEnvironment) -> AndroidContext {
+        AndroidContext(pointer: javaObject, env: environment)
     }
 
     /// Sets a pre-initialized Android context directly, bypassing the automatic JVM and context
@@ -141,7 +151,7 @@ public class AndroidContext: @unchecked Sendable {
         return .success(AndroidContext(pointer: ctx, env: env))
     }()
 
-    /// The `AndroidAssetManager` for this context
+    /// The `AndroidFileManager` for this context
     public var assetManager: AssetManager {
         let jni: JNINativeInterface = env.pointee!.pointee
 
