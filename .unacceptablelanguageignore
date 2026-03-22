@@ -1,2 +1,5 @@
 Sources/AndroidSystem/Errno.swift
+Sources/AndroidBinder/BinderClass.swift
+Sources/AndroidBinder/DeathRecipient.swift
+Sources/AndroidLooper/LooperEvents.swift
 Tests/AndroidNativeTests/AndroidNativeTests.swift
