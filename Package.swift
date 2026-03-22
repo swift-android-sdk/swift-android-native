@@ -88,6 +88,10 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
                 .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
             ]),
         .testTarget(
             name: "AndroidAssetManagerTests",
@@ -121,6 +125,10 @@ let package = Package(
                 "AndroidSystem",
                 "AndroidLogging",
                 "ConcurrencyRuntimeC",
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
             ]),
         .testTarget(
             name: "AndroidLooperTests",
@@ -132,6 +140,10 @@ let package = Package(
             dependencies: [
                 "AndroidSystem",
                 "AndroidLogging",
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
             ]),
         .testTarget(
             name: "AndroidChoreographerTests",
