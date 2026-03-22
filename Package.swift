@@ -54,6 +54,9 @@ let package = Package(
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
         .library(name: "AndroidChoreographer", targets: ["AndroidChoreographer"]),
+        .library(name: "AndroidManifest", targets: ["AndroidManifest"]),
+        .library(name: "AndroidInput", targets: ["AndroidInput"]),
+        .library(name: "AndroidHardware", targets: ["AndroidHardware"]),
     ],
     dependencies: [
         swiftJavaJNICoreDep
@@ -85,6 +88,10 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
                 .target(name: "CAndroidNDK", condition: .when(platforms: [.android])),
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
             ]),
         .testTarget(
             name: "AndroidAssetManagerTests",
@@ -118,6 +125,10 @@ let package = Package(
                 "AndroidSystem",
                 "AndroidLogging",
                 "ConcurrencyRuntimeC",
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
             ]),
         .testTarget(
             name: "AndroidLooperTests",
@@ -129,12 +140,58 @@ let package = Package(
             dependencies: [
                 "AndroidSystem",
                 "AndroidLogging",
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
             ]),
         .testTarget(
             name: "AndroidChoreographerTests",
             dependencies: [
                 "AndroidChoreographer"
             ]),
+
+        .target(
+            name: "AndroidManifest",
+            dependencies: [
+                "CAndroidNDK"
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
+        .target(
+            name: "AndroidInput",
+            dependencies: [
+                "CAndroidNDK",
+                "AndroidLooper",
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
+        .target(
+            name: "AndroidHardware",
+            dependencies: [
+                "CAndroidNDK",
+                "AndroidLooper",
+            ],
+            swiftSettings: [
+                ndkVersionDefine,
+                sdkVersionDefine,
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
         .target(
             name: "AndroidNative",
             dependencies: [

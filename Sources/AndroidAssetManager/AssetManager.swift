@@ -30,7 +30,7 @@ public struct AssetManager: @unchecked Sendable {
 }
 
 public extension AssetManager {
-    
+
     /**
      * Converts an android.content.res.AssetManager object into an AAssetManager* object.
      *
@@ -62,9 +62,11 @@ public extension AssetManager {
     ///   - path: Relative path under the APK `assets/` directory.
     ///   - mode: Access hint for Android's asset backend.
     func open(_ path: String, mode: AssetMode = .streaming) throws(AndroidFileManagerError) -> Asset {
-        guard let pointer = path.withCString({
-            AAssetManager_open(pointer, $0, mode.rawValue)
-        }) else {
+        guard
+            let pointer = path.withCString({
+                AAssetManager_open(pointer, $0, mode.rawValue)
+            })
+        else {
             throw .openAsset(path)
         }
         return Asset(pointer)
@@ -74,9 +76,11 @@ public extension AssetManager {
     ///
     /// - Parameter path: Relative path under the APK `assets/` directory. Pass `""` for the root.
     func openDirectory(_ path: String = "") throws(AndroidFileManagerError) -> AssetDirectory {
-        guard let pointer = path.withCString({
-            AAssetManager_openDir(pointer, $0)
-        }) else {
+        guard
+            let pointer = path.withCString({
+                AAssetManager_openDir(pointer, $0)
+            })
+        else {
             throw .openAssetDirectory(path)
         }
         return AssetDirectory(pointer)
@@ -95,4 +99,3 @@ public extension AssetManager {
         case buffer = 3
     }
 }
-

@@ -23,16 +23,16 @@ import AndroidSystem
 
 @available(macOS 13.0, iOS 13.0, *)
 public extension Looper {
-    
+
     // Swift structured concurrency executor that enqueues jobs on an Android Looper.
     final class Executor: SerialExecutor, @unchecked Sendable {
-        
+
         #if os(Android)
         let eventFd: SocketDescriptor.Event
         #endif
         let looper: Looper
         let queue = LockedState(initialState: [UnownedJob]())
-        
+
         /// Initialize with Android Looper
         internal init(looper: consuming Looper) throws(AndroidLooperError) {
             #if os(Android)
@@ -40,8 +40,7 @@ public extension Looper {
             // open fd
             do {
                 eventFd = try SocketDescriptor.Event(0, flags: [.closeOnExec, .nonBlocking])
-            }
-            catch {
+            } catch {
                 throw .bionic(error)
             }
             // initialize
@@ -60,7 +59,7 @@ public extension Looper {
             }
             #endif
         }
-        
+
         /// Enqueue a single job
         public func enqueue(_ job: UnownedJob) {
             queue.withLock { queue in
@@ -77,20 +76,19 @@ public extension Looper {
 
 @available(macOS 13.0, iOS 13.0, *)
 internal extension Looper.Executor {
-    
+
     func configureLooper() throws(AndroidLooperError) {
         #if os(Android)
         do {
             // add to looper
             try looper.handle.add(fileDescriptor: .init(rawValue: eventFd.rawValue), callback: drainAExecutor, data: Unmanaged.passUnretained(self).toOpaque()).get()
-        }
-        catch {
+        } catch {
             try? eventFd.close()
             throw error
         }
         #endif
     }
-    
+
     /// Read number of remaining events from eventFd
     var eventsRemaining: UInt64 {
         get throws {

@@ -16,7 +16,7 @@
 import Foundation
 
 public extension Thread {
-    
+
     /**
      * Prepares a looper associated with the calling thread, and returns it.
      * If the thread already has a looper, it is returned.  Otherwise, a new

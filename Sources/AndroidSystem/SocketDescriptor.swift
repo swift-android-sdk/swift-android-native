@@ -16,21 +16,21 @@
 ///
 /// Same as ``FileDescriptor`` on POSIX and opaque type on Windows.
 public struct SocketDescriptor: RawRepresentable, Equatable, Hashable, Sendable {
-    
+
     /// Native POSIX Socket handle
     public typealias RawValue = FileDescriptor.RawValue
-    
+
     public init(rawValue: RawValue) {
         self.rawValue = rawValue
     }
-    
+
     public let rawValue: RawValue
 }
 
 // MARK: - Operations
 
 extension SocketDescriptor {
-    
+
     /// Deletes a file descriptor.
     ///
     /// Deletes the file descriptor from the per-process object reference table.
@@ -43,10 +43,9 @@ extension SocketDescriptor {
 
     @usableFromInline
     internal func _close() -> Result<(), Errno> {
-      nothingOrErrno(retryOnInterrupt: false) { system_close(self.rawValue) }
+        nothingOrErrno(retryOnInterrupt: false) { system_close(self.rawValue) }
     }
-    
-    
+
     /// Reads bytes at the current file offset into a buffer.
     ///
     /// - Parameters:
@@ -68,22 +67,22 @@ extension SocketDescriptor {
     /// The corresponding C function is `read`.
     @_alwaysEmitIntoClient
     public func read(
-      into buffer: UnsafeMutableRawBufferPointer,
-      retryOnInterrupt: Bool = true
+        into buffer: UnsafeMutableRawBufferPointer,
+        retryOnInterrupt: Bool = true
     ) throws(Errno) -> Int {
-      try _read(into: buffer, retryOnInterrupt: retryOnInterrupt).get()
+        try _read(into: buffer, retryOnInterrupt: retryOnInterrupt).get()
     }
 
     @usableFromInline
     internal func _read(
-      into buffer: UnsafeMutableRawBufferPointer,
-      retryOnInterrupt: Bool
+        into buffer: UnsafeMutableRawBufferPointer,
+        retryOnInterrupt: Bool
     ) -> Result<Int, Errno> {
-      valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
-        system_read(self.rawValue, buffer.baseAddress, buffer.count)
-      }
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_read(self.rawValue, buffer.baseAddress, buffer.count)
+        }
     }
-    
+
     /// Writes the contents of a buffer at the current file offset.
     ///
     /// - Parameters:
@@ -102,19 +101,19 @@ extension SocketDescriptor {
     /// The corresponding C function is `write`.
     @_alwaysEmitIntoClient
     public func write(
-      _ buffer: UnsafeRawBufferPointer,
-      retryOnInterrupt: Bool = true
+        _ buffer: UnsafeRawBufferPointer,
+        retryOnInterrupt: Bool = true
     ) throws(Errno) -> Int {
-      try _write(buffer, retryOnInterrupt: retryOnInterrupt).get()
+        try _write(buffer, retryOnInterrupt: retryOnInterrupt).get()
     }
 
     @usableFromInline
     internal func _write(
-      _ buffer: UnsafeRawBufferPointer,
-      retryOnInterrupt: Bool
+        _ buffer: UnsafeRawBufferPointer,
+        retryOnInterrupt: Bool
     ) -> Result<Int, Errno> {
-      valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
-        system_write(self.rawValue, buffer.baseAddress, buffer.count)
-      }
+        valueOrErrno(retryOnInterrupt: retryOnInterrupt) {
+            system_write(self.rawValue, buffer.baseAddress, buffer.count)
+        }
     }
 }

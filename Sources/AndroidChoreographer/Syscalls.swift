@@ -1,10 +1,16 @@
+//===----------------------------------------------------------------------===//
 //
-//  Syscalls.swift
-//  SwiftAndroid
+// This source file is part of the SwiftAndroidNative open source project
 //
-//  Created by Alsey Coleman Miller on 7/6/25.
+// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
+// Licensed under Apache License v2.0
 //
-
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+//===----------------------------------------------------------------------===//
 
 #if canImport(Darwin)
 import Darwin
@@ -56,9 +62,10 @@ func ALooper_pollAll(
     _ outData: UnsafeMutablePointer<UnsafeMutableRawPointer?>?
 ) -> Int32 { stub() }
 
-public typealias ALooper_callbackFunc = @convention(c) (
-    Int32, Int32, UnsafeMutableRawPointer?
-) -> Int32
+public typealias ALooper_callbackFunc =
+    @convention(c) (
+        Int32, Int32, UnsafeMutableRawPointer?
+    ) -> Int32
 
 func ALooper_addFd(
     _ looper: OpaquePointer,

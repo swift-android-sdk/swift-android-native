@@ -158,11 +158,11 @@ internal var _EAGAIN: CInt { EAGAIN }
 
 @_alwaysEmitIntoClient
 internal var _EWOULDBLOCK: CInt {
-#if os(WASI)
-  _getConst_EWOULDBLOCK()
-#else
-  EWOULDBLOCK
-#endif
+    #if os(WASI)
+    _getConst_EWOULDBLOCK()
+    #else
+    EWOULDBLOCK
+    #endif
 }
 
 @_alwaysEmitIntoClient
@@ -192,31 +192,31 @@ internal var _EPROTONOSUPPORT: CInt { EPROTONOSUPPORT }
 #if !os(WASI)
 @_alwaysEmitIntoClient
 internal var _ESOCKTNOSUPPORT: CInt {
-#if os(Windows)
-  return WSAESOCKTNOSUPPORT
-#else
-  return ESOCKTNOSUPPORT
-#endif
+    #if os(Windows)
+    return WSAESOCKTNOSUPPORT
+    #else
+    return ESOCKTNOSUPPORT
+    #endif
 }
 #endif
 
 @_alwaysEmitIntoClient
 internal var _ENOTSUP: CInt {
-#if os(Windows)
-  return WSAEOPNOTSUPP
-#else
-  return ENOTSUP
-#endif
+    #if os(Windows)
+    return WSAEOPNOTSUPP
+    #else
+    return ENOTSUP
+    #endif
 }
 
 #if !os(WASI)
 @_alwaysEmitIntoClient
 internal var _EPFNOSUPPORT: CInt {
-#if os(Windows)
-  return WSAEPFNOSUPPORT
-#else
-  return EPFNOSUPPORT
-#endif
+    #if os(Windows)
+    return WSAEPFNOSUPPORT
+    #else
+    return EPFNOSUPPORT
+    #endif
 }
 #endif
 
@@ -256,20 +256,20 @@ internal var _ENOTCONN: CInt { ENOTCONN }
 #if !os(WASI)
 @_alwaysEmitIntoClient
 internal var _ESHUTDOWN: CInt {
-#if os(Windows)
-  return WSAESHUTDOWN
-#else
-  return ESHUTDOWN
-#endif
+    #if os(Windows)
+    return WSAESHUTDOWN
+    #else
+    return ESHUTDOWN
+    #endif
 }
 
 @_alwaysEmitIntoClient
 internal var _ETOOMANYREFS: CInt {
-#if os(Windows)
-  return WSAETOOMANYREFS
-#else
-  return ETOOMANYREFS
-#endif
+    #if os(Windows)
+    return WSAETOOMANYREFS
+    #else
+    return ETOOMANYREFS
+    #endif
 }
 #endif
 
@@ -288,11 +288,11 @@ internal var _ENAMETOOLONG: CInt { ENAMETOOLONG }
 #if !os(WASI)
 @_alwaysEmitIntoClient
 internal var _EHOSTDOWN: CInt {
-#if os(Windows)
-  return WSAEHOSTDOWN
-#else
-  return EHOSTDOWN
-#endif
+    #if os(Windows)
+    return WSAEHOSTDOWN
+    #else
+    return EHOSTDOWN
+    #endif
 }
 #endif
 
@@ -310,40 +310,40 @@ internal var _EPROCLIM: CInt { EPROCLIM }
 #if !os(WASI)
 @_alwaysEmitIntoClient
 internal var _EUSERS: CInt {
-#if os(Windows)
-  return WSAEUSERS
-#else
-  return EUSERS
-#endif
+    #if os(Windows)
+    return WSAEUSERS
+    #else
+    return EUSERS
+    #endif
 }
 #endif
 
 @_alwaysEmitIntoClient
 internal var _EDQUOT: CInt {
-#if os(Windows)
-  return WSAEDQUOT
-#else
-  return EDQUOT
-#endif
+    #if os(Windows)
+    return WSAEDQUOT
+    #else
+    return EDQUOT
+    #endif
 }
 
 @_alwaysEmitIntoClient
 internal var _ESTALE: CInt {
-#if os(Windows)
-  return WSAESTALE
-#else
-  return ESTALE
-#endif
+    #if os(Windows)
+    return WSAESTALE
+    #else
+    return ESTALE
+    #endif
 }
 
 #if !os(WASI)
 @_alwaysEmitIntoClient
 internal var _EREMOTE: CInt {
-#if os(Windows)
-  return WSAEREMOTE
-#else
-  return EREMOTE
-#endif
+    #if os(Windows)
+    return WSAEREMOTE
+    #else
+    return EREMOTE
+    #endif
 }
 #endif
 
@@ -447,7 +447,7 @@ internal var _ENOSR: CInt { ENOSR }
 
 @_alwaysEmitIntoClient
 internal var _ENOSTR: CInt { ENOSTR }
-#endif 
+#endif
 #endif
 
 @_alwaysEmitIntoClient
@@ -459,14 +459,13 @@ internal var _ETIME: CInt { ETIME }
 #endif
 #endif
 
-
 @_alwaysEmitIntoClient
 internal var _EOPNOTSUPP: CInt {
-#if os(WASI)
-  _getConst_EOPNOTSUPP()
-#else
-  EOPNOTSUPP
-#endif
+    #if os(WASI)
+    _getConst_EOPNOTSUPP()
+    #else
+    EOPNOTSUPP
+    #endif
 }
 
 #if SYSTEM_PACKAGE_DARWIN
@@ -503,36 +502,36 @@ internal var _O_RDWR: CInt { O_RDWR }
 
 #if !os(Windows)
 #if canImport(Musl)
-internal var _O_ACCMODE: CInt { 0x03|O_SEARCH }
+internal var _O_ACCMODE: CInt { 0x03 | O_SEARCH }
 #else
 // TODO: API?
 @_alwaysEmitIntoClient
 internal var _O_ACCMODE: CInt {
-#if os(WASI)
-  _getConst_O_ACCMODE()
-#else
-  O_ACCMODE
-#endif
+    #if os(WASI)
+    _getConst_O_ACCMODE()
+    #else
+    O_ACCMODE
+    #endif
 }
 #endif
 
 @_alwaysEmitIntoClient
 internal var _O_NONBLOCK: CInt {
-#if os(WASI)
-  _getConst_O_NONBLOCK()
-#else
-  O_NONBLOCK
-#endif
+    #if os(WASI)
+    _getConst_O_NONBLOCK()
+    #else
+    O_NONBLOCK
+    #endif
 }
 #endif
 
 @_alwaysEmitIntoClient
 internal var _O_APPEND: CInt {
-#if os(WASI)
-  _getConst_O_APPEND()
-#else
-  O_APPEND
-#endif
+    #if os(WASI)
+    _getConst_O_APPEND()
+    #else
+    O_APPEND
+    #endif
 }
 
 #if SYSTEM_PACKAGE_DARWIN
@@ -556,29 +555,29 @@ internal var _O_NOFOLLOW: CInt { O_NOFOLLOW }
 
 @_alwaysEmitIntoClient
 internal var _O_CREAT: CInt {
-#if os(WASI)
-  _getConst_O_CREAT()
-#else
-  O_CREAT
-#endif
+    #if os(WASI)
+    _getConst_O_CREAT()
+    #else
+    O_CREAT
+    #endif
 }
 
 @_alwaysEmitIntoClient
 internal var _O_TRUNC: CInt {
-#if os(WASI)
-  _getConst_O_TRUNC()
-#else
-  O_TRUNC
-#endif
+    #if os(WASI)
+    _getConst_O_TRUNC()
+    #else
+    O_TRUNC
+    #endif
 }
 
 @_alwaysEmitIntoClient
 internal var _O_EXCL: CInt {
-#if os(WASI)
-  _getConst_O_EXCL()
-#else
-  O_EXCL
-#endif
+    #if os(WASI)
+    _getConst_O_EXCL()
+    #else
+    O_EXCL
+    #endif
 }
 
 #if SYSTEM_PACKAGE_DARWIN
@@ -593,11 +592,11 @@ internal var _O_NOCTTY: CInt { O_NOCTTY }
 
 @_alwaysEmitIntoClient
 internal var _O_DIRECTORY: CInt {
-#if os(WASI)
-  _getConst_O_DIRECTORY()
-#else
-  O_DIRECTORY
-#endif
+    #if os(WASI)
+    _getConst_O_DIRECTORY()
+    #else
+    O_DIRECTORY
+    #endif
 }
 #endif
 
@@ -641,19 +640,19 @@ internal var _EFD_SEMAPHORE: CInt { numericCast(EFD_SEMAPHORE) }
 
 @_alwaysEmitIntoClient
 internal var _fd_set_count: Int {
-#if canImport(Darwin)
+    #if canImport(Darwin)
     // __DARWIN_FD_SETSIZE is number of *bits*, so divide by number bits in each element to get element count
     // at present this is 1024 / 32 == 32
     return Int(__DARWIN_FD_SETSIZE) / 32
-#elseif os(Linux) || os(FreeBSD) || os(Android)
-#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
+    #elseif os(Linux) || os(FreeBSD) || os(Android)
+    #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
     return 32
-#elseif arch(i386) || arch(arm)
+    #elseif arch(i386) || arch(arm)
     return 16
-#else
-#error("This architecture isn't known. Add it to the 32-bit or 64-bit line.")
-#endif
-#elseif os(Windows)
+    #else
+    #error("This architecture isn't known. Add it to the 32-bit or 64-bit line.")
+    #endif
+    #elseif os(Windows)
     return 32
-#endif
+    #endif
 }

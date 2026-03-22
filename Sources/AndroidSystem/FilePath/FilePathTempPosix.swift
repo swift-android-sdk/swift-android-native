@@ -25,11 +25,11 @@
 
 /// Get the path to the system temporary directory.
 internal func _getTemporaryDirectory() throws -> FilePath {
-  guard let tmp = system_getenv("TMPDIR") else {
-    return "/tmp"
-  }
+    guard let tmp = system_getenv("TMPDIR") else {
+        return "/tmp"
+    }
 
-  return FilePath(SystemString(platformString: tmp))
+    return FilePath(SystemString(platformString: tmp))
 }
 
 /// Delete the entire contents of a directory, including its subdirectories.
@@ -39,26 +39,26 @@ internal func _getTemporaryDirectory() throws -> FilePath {
 ///
 /// Removes a directory completely, including all of its contents.
 internal func _recursiveRemove(
-  at path: FilePath
+    at path: FilePath
 ) throws {
-  let dirfd = try FileDescriptor.open(path, .readOnly, options: .directory)
-  defer {
-    try? dirfd.close()
-  }
-
-  let dot: (CInterop.PlatformChar, CInterop.PlatformChar) = (46, 0)
-  try withUnsafeBytes(of: dot) {
-    try recursiveRemove(
-      in: dirfd.rawValue,
-      name: $0.assumingMemoryBound(to: CInterop.PlatformChar.self).baseAddress!
-    )
-  }
-
-  try path.withPlatformString {
-    if system_rmdir($0) != 0 {
-      throw Errno.current
+    let dirfd = try FileDescriptor.open(path, .readOnly, options: .directory)
+    defer {
+        try? dirfd.close()
     }
-  }
+
+    let dot: (CInterop.PlatformChar, CInterop.PlatformChar) = (46, 0)
+    try withUnsafeBytes(of: dot) {
+        try recursiveRemove(
+            in: dirfd.rawValue,
+            name: $0.assumingMemoryBound(to: CInterop.PlatformChar.self).baseAddress!
+        )
+    }
+
+    try path.withPlatformString {
+        if system_rmdir($0) != 0 {
+            throw Errno.current
+        }
+    }
 }
 
 /// Open a directory by reference to its parent and name.
@@ -72,16 +72,17 @@ internal func _recursiveRemove(
 /// file descriptor pointing at the parent, thus avoiding path length
 /// limits.
 fileprivate func impl_opendirat(
-  _ dirfd: CInt,
-  _ name: UnsafePointer<CInterop.PlatformChar>
+    _ dirfd: CInt,
+    _ name: UnsafePointer<CInterop.PlatformChar>
 ) -> system_DIRPtr? {
-  let fd = system_openat(dirfd, name,
-                         FileDescriptor.AccessMode.readOnly.rawValue
-                           | FileDescriptor.OpenOptions.directory.rawValue)
-  if fd < 0 {
-    return nil
-  }
-  return system_fdopendir(fd)
+    let fd = system_openat(
+        dirfd, name,
+        FileDescriptor.AccessMode.readOnly.rawValue
+            | FileDescriptor.OpenOptions.directory.rawValue)
+    if fd < 0 {
+        return nil
+    }
+    return system_fdopendir(fd)
 }
 
 /// Invoke a closure for each file within a particular directory.
@@ -93,28 +94,29 @@ fileprivate func impl_opendirat(
 ///
 /// We skip the `.` and `..` pseudo-entries.
 fileprivate func forEachFile(
-  in dirfd: CInt,
-  subdir: UnsafePointer<CInterop.PlatformChar>,
-  _ body: (system_dirent) throws -> ()
+    in dirfd: CInt,
+    subdir: UnsafePointer<CInterop.PlatformChar>,
+    _ body: (system_dirent) throws -> ()
 ) throws {
-  guard let dir = impl_opendirat(dirfd, subdir) else {
-    throw Errno.current
-  }
-  defer {
-    _ = system_closedir(dir)
-  }
-
-  while let dirent = system_readdir(dir) {
-    // Skip . and ..
-    if dirent.pointee.d_name.0 == 46
-         && (dirent.pointee.d_name.1 == 0
-               || (dirent.pointee.d_name.1 == 46
-                     && dirent.pointee.d_name.2 == 0)) {
-      continue
+    guard let dir = impl_opendirat(dirfd, subdir) else {
+        throw Errno.current
+    }
+    defer {
+        _ = system_closedir(dir)
     }
 
-    try body(dirent.pointee)
-  }
+    while let dirent = system_readdir(dir) {
+        // Skip . and ..
+        if dirent.pointee.d_name.0 == 46
+            && (dirent.pointee.d_name.1 == 0
+                || (dirent.pointee.d_name.1 == 46
+                    && dirent.pointee.d_name.2 == 0))
+        {
+            continue
+        }
+
+        try body(dirent.pointee)
+    }
 }
 
 /// Delete the entire contents of a directory, including its subdirectories.
@@ -125,43 +127,44 @@ fileprivate func forEachFile(
 ///
 /// Removes a directory completely, including all of its contents.
 fileprivate func recursiveRemove(
-  in dirfd: CInt,
-  name: UnsafePointer<CInterop.PlatformChar>
+    in dirfd: CInt,
+    name: UnsafePointer<CInterop.PlatformChar>
 ) throws {
-  // First, deal with subdirectories
-  try forEachFile(in: dirfd, subdir: name) { dirent in
-    if dirent.d_type == SYSTEM_DT_DIR {
-      try withUnsafeBytes(of: dirent.d_name) {
-        try recursiveRemove(
-          in: dirfd,
-          name: $0.assumingMemoryBound(to: CInterop.PlatformChar.self)
-            .baseAddress!
-        )
-      }
-    }
-  }
-
-  // Now delete the contents of this directory
-  try forEachFile(in: dirfd, subdir: name) { dirent in
-    let flag: CInt
-
-    if dirent.d_type == SYSTEM_DT_DIR {
-      flag = SYSTEM_AT_REMOVE_DIR
-    } else {
-      flag = 0
+    // First, deal with subdirectories
+    try forEachFile(in: dirfd, subdir: name) { dirent in
+        if dirent.d_type == SYSTEM_DT_DIR {
+            try withUnsafeBytes(of: dirent.d_name) {
+                try recursiveRemove(
+                    in: dirfd,
+                    name: $0.assumingMemoryBound(to: CInterop.PlatformChar.self)
+                        .baseAddress!
+                )
+            }
+        }
     }
 
-    let result = withUnsafeBytes(of: dirent.d_name) {
-      system_unlinkat(dirfd,
-                      $0.assumingMemoryBound(to: CInterop.PlatformChar.self)
-                        .baseAddress!,
-                      flag)
-    }
+    // Now delete the contents of this directory
+    try forEachFile(in: dirfd, subdir: name) { dirent in
+        let flag: CInt
 
-    if result != 0 {
-      throw Errno.current
+        if dirent.d_type == SYSTEM_DT_DIR {
+            flag = SYSTEM_AT_REMOVE_DIR
+        } else {
+            flag = 0
+        }
+
+        let result = withUnsafeBytes(of: dirent.d_name) {
+            system_unlinkat(
+                dirfd,
+                $0.assumingMemoryBound(to: CInterop.PlatformChar.self)
+                    .baseAddress!,
+                flag)
+        }
+
+        if result != 0 {
+            throw Errno.current
+        }
     }
-  }
 }
 
 #endif // !os(Windows)

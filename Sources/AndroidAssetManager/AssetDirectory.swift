@@ -54,7 +54,7 @@ public extension AssetDirectory {
 // MARK: - Sequence
 
 public extension AssetDirectory {
-    
+
     /// A `Sequence` adapter over ``AssetDirectory`` for use in `for`-`in` loops.
     ///
     /// Iteration is single-pass; call ``rewind()`` to restart from the beginning.
@@ -63,7 +63,7 @@ public extension AssetDirectory {
         public typealias Element = String
 
         private var directory: AssetDirectory
-        
+
         public init(_ directory: consuming AssetDirectory) {
             self.directory = directory
         }
@@ -73,7 +73,7 @@ public extension AssetDirectory {
         }
 
         public func makeIterator() -> AssetDirectory.Sequence { self }
-        
+
         /// Resets iteration to the beginning of the directory.
         public func rewind() {
             directory.rewind()

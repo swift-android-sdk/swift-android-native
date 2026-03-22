@@ -48,45 +48,45 @@ import Android
 public typealias CModeT = CInt
 #else
 /// The C `mode_t` type.
-@available(/*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
+@available( /*System 0.0.1: macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0*/iOS 8, *)
 public typealias CModeT = mode_t
 #endif
 
 /// A namespace for C and platform types
-@available(/*System 0.0.2: macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0*/iOS 8, *)
+@available( /*System 0.0.2: macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0*/iOS 8, *)
 public enum CInterop {
-#if os(Windows)
-  public typealias Mode = CInt
-#else
-  public typealias Mode = mode_t
-#endif
+    #if os(Windows)
+    public typealias Mode = CInt
+    #else
+    public typealias Mode = mode_t
+    #endif
 
-  /// The C `char` type
-  public typealias Char = CChar
+    /// The C `char` type
+    public typealias Char = CChar
 
-  #if os(Windows)
-  /// The platform's preferred character type. On Unix, this is an 8-bit C
-  /// `char` (which may be signed or unsigned, depending on platform). On
-  /// Windows, this is `UInt16` (a "wide" character).
-  public typealias PlatformChar = UInt16
-  #else
-  /// The platform's preferred character type. On Unix, this is an 8-bit C
-  /// `char` (which may be signed or unsigned, depending on platform). On
-  /// Windows, this is `UInt16` (a "wide" character).
-  public typealias PlatformChar = CInterop.Char
-  #endif
+    #if os(Windows)
+    /// The platform's preferred character type. On Unix, this is an 8-bit C
+    /// `char` (which may be signed or unsigned, depending on platform). On
+    /// Windows, this is `UInt16` (a "wide" character).
+    public typealias PlatformChar = UInt16
+    #else
+    /// The platform's preferred character type. On Unix, this is an 8-bit C
+    /// `char` (which may be signed or unsigned, depending on platform). On
+    /// Windows, this is `UInt16` (a "wide" character).
+    public typealias PlatformChar = CInterop.Char
+    #endif
 
-  #if os(Windows)
-  /// The platform's preferred Unicode encoding. On Unix this is UTF-8 and on
-  /// Windows it is UTF-16. Native strings may contain invalid Unicode,
-  /// which will be handled by either error-correction or failing, depending
-  /// on API.
-  public typealias PlatformUnicodeEncoding = UTF16
-  #else
-  /// The platform's preferred Unicode encoding. On Unix this is UTF-8 and on
-  /// Windows it is UTF-16. Native strings may contain invalid Unicode,
-  /// which will be handled by either error-correction or failing, depending
-  /// on API.
-  public typealias PlatformUnicodeEncoding = UTF8
-  #endif
+    #if os(Windows)
+    /// The platform's preferred Unicode encoding. On Unix this is UTF-8 and on
+    /// Windows it is UTF-16. Native strings may contain invalid Unicode,
+    /// which will be handled by either error-correction or failing, depending
+    /// on API.
+    public typealias PlatformUnicodeEncoding = UTF16
+    #else
+    /// The platform's preferred Unicode encoding. On Unix this is UTF-8 and on
+    /// Windows it is UTF-16. Native strings may contain invalid Unicode,
+    /// which will be handled by either error-correction or failing, depending
+    /// on API.
+    public typealias PlatformUnicodeEncoding = UTF8
+    #endif
 }

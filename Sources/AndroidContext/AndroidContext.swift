@@ -96,11 +96,9 @@ public class AndroidContext: @unchecked Sendable {
         do {
             jvm = try JavaVirtualMachine.shared()
             env = try jvm.environment()
-        }
-        catch let error as JavaVirtualMachine.VMError {
+        } catch let error as JavaVirtualMachine.VMError {
             return .failure(.virtualMachine(error))
-        }
-        catch {
+        } catch {
             fatalError("Non-JavaVirtualMachine.VMError error thrown")
         }
         let jni: JNINativeInterface = env.pointee!.pointee
@@ -153,7 +151,7 @@ public class AndroidContext: @unchecked Sendable {
         let contextClass: jclass = jni.GetObjectClass(env, pointer)!
         let getAssetsID: jmethodID = jni.GetMethodID(env, contextClass, "getAssets", "()Landroid/content/res/AssetManager;")!
         let assetManagerObj: jobject = jni.CallObjectMethodA(env, pointer, getAssetsID, [])!
-        
+
         return AssetManager.fromJava(assetManagerObj, environment: env)!
     }
 

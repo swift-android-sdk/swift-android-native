@@ -18,22 +18,22 @@ import CAndroidNDK
 #endif
 
 public extension Looper {
-    
+
     /**
      * Flags for file descriptor events that a looper can monitor.
      *
      * These flag bits can be combined to monitor multiple events at once.
      */
     struct Events: OptionSet, Sendable {
-        
+
         public typealias RawValue = Int
-        
+
         public var rawValue: Int
 
         public init(rawValue: Int) {
             self.init(rawValue)
         }
-        
+
         private init(_ raw: Int) {
             self.rawValue = raw
         }
@@ -43,17 +43,17 @@ public extension Looper {
 // MARK: - Constants
 
 public extension Looper.Events {
-    
+
     /**
      * The file descriptor is available for read operations.
      */
     static var input: Looper.Events { .init(ALOOPER_EVENT_INPUT) }
-    
+
     /**
      * The file descriptor is available for write operations.
      */
     static var output: Looper.Events { .init(ALOOPER_EVENT_OUTPUT) }
-    
+
     /**
      * The file descriptor has encountered an error condition.
      *
@@ -61,7 +61,7 @@ public extension Looper.Events {
      * to specify this event flag in the requested event set.
      */
     static var error: Looper.Events { .init(ALOOPER_EVENT_ERROR) }
-    
+
     /**
      * The file descriptor was hung up.
      * For example, indicates that the remote end of a pipe or socket was closed.
@@ -69,8 +69,8 @@ public extension Looper.Events {
      * The looper always sends notifications about hangups; it is not necessary
      * to specify this event flag in the requested event set.
      */
-    static var hangup: Looper.Events { .init(ALOOPER_EVENT_HANGUP)}
-    
+    static var hangup: Looper.Events { .init(ALOOPER_EVENT_HANGUP) }
+
     /**
      * The file descriptor is invalid.
      * For example, the file descriptor was closed prematurely.
@@ -84,7 +84,7 @@ public extension Looper.Events {
 // MARK: - CustomStringConvertible
 
 extension Looper.Events: CustomStringConvertible, CustomDebugStringConvertible {
-    
+
     /// A textual representation of the binder object flags.
     @inline(never)
     public var description: String {
@@ -93,7 +93,7 @@ extension Looper.Events: CustomStringConvertible, CustomDebugStringConvertible {
             (.output, ".output"),
             (.error, ".error"),
             (.hangup, ".hangup"),
-            (.invalid, ".invalid")
+            (.invalid, ".invalid"),
         ]
         return _buildDescription(descriptions)
     }
