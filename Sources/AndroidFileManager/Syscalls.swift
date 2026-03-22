@@ -85,6 +85,54 @@ func AConfiguration_getSmallestScreenWidthDp(_ config: OpaquePointer) -> Int32 {
 
 func AConfiguration_getLayoutDirection(_ config: OpaquePointer) -> Int32 { stub() }
 
+func AConfiguration_getScreenRound(_ config: OpaquePointer) -> Int32 { stub() }
+
+func AConfiguration_getGrammaticalGender(_ config: OpaquePointer) -> Int32 { stub() }
+
+func AConfiguration_setMcc(_ config: OpaquePointer, _ mcc: Int32) { stub() }
+
+func AConfiguration_setMnc(_ config: OpaquePointer, _ mnc: Int32) { stub() }
+
+func AConfiguration_setLanguage(_ config: OpaquePointer, _ language: UnsafePointer<CChar>?) { stub() }
+
+func AConfiguration_setCountry(_ config: OpaquePointer, _ country: UnsafePointer<CChar>?) { stub() }
+
+func AConfiguration_setOrientation(_ config: OpaquePointer, _ orientation: Int32) { stub() }
+
+func AConfiguration_setTouchscreen(_ config: OpaquePointer, _ touchscreen: Int32) { stub() }
+
+func AConfiguration_setDensity(_ config: OpaquePointer, _ density: Int32) { stub() }
+
+func AConfiguration_setKeyboard(_ config: OpaquePointer, _ keyboard: Int32) { stub() }
+
+func AConfiguration_setNavigation(_ config: OpaquePointer, _ navigation: Int32) { stub() }
+
+func AConfiguration_setKeysHidden(_ config: OpaquePointer, _ keysHidden: Int32) { stub() }
+
+func AConfiguration_setNavHidden(_ config: OpaquePointer, _ navHidden: Int32) { stub() }
+
+func AConfiguration_setSdkVersion(_ config: OpaquePointer, _ sdkVersion: Int32) { stub() }
+
+func AConfiguration_setScreenSize(_ config: OpaquePointer, _ screenSize: Int32) { stub() }
+
+func AConfiguration_setScreenLong(_ config: OpaquePointer, _ screenLong: Int32) { stub() }
+
+func AConfiguration_setScreenRound(_ config: OpaquePointer, _ screenRound: Int32) { stub() }
+
+func AConfiguration_setUiModeType(_ config: OpaquePointer, _ uiModeType: Int32) { stub() }
+
+func AConfiguration_setUiModeNight(_ config: OpaquePointer, _ uiModeNight: Int32) { stub() }
+
+func AConfiguration_setScreenWidthDp(_ config: OpaquePointer, _ value: Int32) { stub() }
+
+func AConfiguration_setScreenHeightDp(_ config: OpaquePointer, _ value: Int32) { stub() }
+
+func AConfiguration_setSmallestScreenWidthDp(_ config: OpaquePointer, _ value: Int32) { stub() }
+
+func AConfiguration_setLayoutDirection(_ config: OpaquePointer, _ value: Int32) { stub() }
+
+func AConfiguration_setGrammaticalGender(_ config: OpaquePointer, _ value: Int32) { stub() }
+
 // MARK: - AAssetManager
 
 func AAssetManager_open(
