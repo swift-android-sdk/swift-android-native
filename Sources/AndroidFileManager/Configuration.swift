@@ -189,6 +189,7 @@ public extension Configuration {
     }
 
     /// Whether the screen is round.
+    @available(Android 30, *)
     var screenRound: ScreenRound {
         get { ScreenRound(rawValue: AConfiguration_getScreenRound(pointer)) ?? .any }
         set { AConfiguration_setScreenRound(pointer, newValue.rawValue) }
@@ -225,12 +226,14 @@ public extension Configuration {
     }
 
     /// Layout direction.
+    @available(Android 17, *)
     var layoutDirection: LayoutDirection {
         get { LayoutDirection(rawValue: AConfiguration_getLayoutDirection(pointer)) ?? .any }
         set { AConfiguration_setLayoutDirection(pointer, newValue.rawValue) }
     }
 
     /// Grammatical gender for locale-sensitive string inflection.
+    @available(Android 34, *)
     var grammaticalGender: GrammaticalGender {
         get { GrammaticalGender(rawValue: AConfiguration_getGrammaticalGender(pointer)) ?? .any }
         set { AConfiguration_setGrammaticalGender(pointer, newValue.rawValue) }
