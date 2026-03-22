@@ -25,7 +25,7 @@ import func Darwin.getenv
 import func Glibc.getenv
 #endif
 import SwiftJavaJNICore
-public import AndroidAssetManager
+public import AndroidFileManager
 
 /// A native reference to
 /// [android.content.Context](https://developer.android.com/reference/android/content/Context)
@@ -151,7 +151,7 @@ public final class AndroidContext: @unchecked Sendable {
         return .success(AndroidContext(pointer: ctx, env: env))
     }()
 
-    /// The `AndroidAssetManager` for this context
+    /// The `AndroidFileManager` for this context
     public var assetManager: AssetManager {
         let jni: JNINativeInterface = env.pointee!.pointee
 

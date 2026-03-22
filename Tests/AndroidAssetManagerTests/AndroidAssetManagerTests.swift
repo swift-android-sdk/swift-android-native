@@ -14,7 +14,7 @@
 
 import Testing
 
-struct AndroidAssetManagerTests {
+struct AndroidFileManagerTests {
     @Test func testAssetManager() async throws {
     }
 }

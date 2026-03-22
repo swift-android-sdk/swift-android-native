@@ -50,7 +50,7 @@ let package = Package(
     products: [
         .library(name: "AndroidNative", targets: ["AndroidNative"]),
         .library(name: "AndroidContext", targets: ["AndroidContext"]),
-        .library(name: "AndroidAssetManager", targets: ["AndroidAssetManager"]),
+        .library(name: "AndroidFileManager", targets: ["AndroidFileManager"]),
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
         .library(name: "AndroidChoreographer", targets: ["AndroidChoreographer"]),
@@ -84,7 +84,7 @@ let package = Package(
                 "AndroidSystem"
             ]),
         .target(
-            name: "AndroidAssetManager",
+            name: "AndroidFileManager",
             dependencies: [
                 "AndroidSystem",
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
@@ -97,12 +97,12 @@ let package = Package(
         .testTarget(
             name: "AndroidAssetManagerTests",
             dependencies: [
-                "AndroidAssetManager"
+                "AndroidFileManager"
             ]),
         .target(
             name: "AndroidContext",
             dependencies: [
-                "AndroidAssetManager",
+                "AndroidFileManager",
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
             ]),
         .testTarget(
@@ -197,7 +197,7 @@ let package = Package(
             name: "AndroidNative",
             dependencies: [
                 .product(name: "SwiftJavaJNICore", package: "swift-java-jni-core"),
-                "AndroidAssetManager",
+                "AndroidFileManager",
                 "AndroidLogging",
                 "AndroidLooper",
                 "AndroidChoreographer",

@@ -14,7 +14,7 @@
 
 import Testing
 import AndroidContext
-import AndroidAssetManager
+import AndroidFileManager
 import OSLog
 import SwiftJavaJNICore
 
