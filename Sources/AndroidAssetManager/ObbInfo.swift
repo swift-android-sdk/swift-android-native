@@ -17,51 +17,6 @@ import Android
 import CAndroidNDK
 #endif
 
-// MARK: - ObbState
-
-/// Status of an OBB mount/unmount operation, passed to the callback.
-public enum ObbState: Int32, Sendable {
-
-    /// The OBB container was successfully mounted.
-    case mounted = 1
-
-    /// The OBB container was successfully unmounted.
-    case unmounted = 2
-
-    /// An internal error occurred during the operation.
-    case errorInternal = 20
-
-    /// The OBB container could not be mounted.
-    case errorCouldNotMount = 21
-
-    /// The OBB container could not be unmounted.
-    case errorCouldNotUnmount = 22
-
-    /// The OBB container is not currently mounted.
-    case errorNotMounted = 23
-
-    /// The OBB container is already mounted.
-    case errorAlreadyMounted = 24
-
-    /// The caller does not have permission to perform the operation.
-    case errorPermissionDenied = 25
-}
-
-// MARK: - ObbInfoFlags
-
-/// Flags describing an OBB file, as returned by `ObbInfo.flags`.
-public struct ObbInfoFlags: OptionSet, Sendable {
-
-    public let rawValue: Int32
-
-    public init(rawValue: Int32) {
-        self.rawValue = rawValue
-    }
-
-    /// The OBB is an overlay patch OBB.
-    public static var overlay: ObbInfoFlags { ObbInfoFlags(rawValue: 0x0001) }
-}
-
 // MARK: - ObbInfo
 
 /// Information about an OBB file, obtained via `ObbScanner.obbInfo(at:)`.
@@ -100,5 +55,45 @@ public extension ObbInfo {
     /// The version number of this OBB.
     var version: Int32 {
         AObbInfo_getVersion(pointer)
+    }
+}
+
+// MARK: - ObbState
+
+/// Status of an OBB mount/unmount operation, passed to the callback.
+public enum ObbState: Int32, Sendable, CaseIterable {
+
+    /// The OBB container was successfully mounted.
+    case mounted = 1
+
+    /// The OBB container was successfully unmounted.
+    case unmounted = 2
+}
+
+// MARK: - ObbInfoFlags
+
+/// Flags describing an OBB file, as returned by `ObbInfo.flags`.
+public struct ObbInfoFlags: OptionSet, Sendable {
+
+    public let rawValue: Int32
+
+    public init(rawValue: Int32) {
+        self.rawValue = rawValue
+    }
+
+    /// The OBB is an overlay patch OBB.
+    public static var overlay: ObbInfoFlags { ObbInfoFlags(rawValue: 0x0001) }
+}
+
+internal typealias ObbStateResult = Result<ObbState, AndroidFileManagerError>
+
+internal extension ObbStateResult {
+
+    init(_ result: Int32) {
+        if let state = ObbState(rawValue: result) {
+            self = .success(state)
+        } else {
+            self = .failure(.obb(.init(rawValue: result)))
+        }
     }
 }
