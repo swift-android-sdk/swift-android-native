@@ -134,9 +134,9 @@ public extension BinderClass {
      * When disabled, the interface token is not written to or verified from the parcel
      * header. This is intended for classes that do not use AIDL-generated code.
      *
-     * Available since API level 35.
+     * Available since API level 33.
      */
-    @available(Android 35, *)
+    @available(Android 33, *)
     func disableInterfaceTokenHeader() {
         handle.disableInterfaceTokenHeader()
     }
@@ -190,7 +190,7 @@ internal extension BinderClass.Handle {
         AIBinder_Class_setHandleShellCommand(pointer, handler)
     }
 
-    @available(Android 35, *)
+    @available(Android 33, *)
     func disableInterfaceTokenHeader() {
         AIBinder_Class_disableInterfaceTokenHeader(pointer)
     }

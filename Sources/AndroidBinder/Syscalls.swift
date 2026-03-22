@@ -40,7 +40,7 @@ func AIBinder_Class_setHandleShellCommand(
     _ handleShellCommand: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
 ) { stub() }
 
-@available(Android 35, *)
+@available(Android 33, *)
 func AIBinder_Class_disableInterfaceTokenHeader(_ clazz: OpaquePointer) { stub() }
 
 // MARK: - Binder (API 29)
@@ -66,6 +66,9 @@ func AIBinder_getCallingPid() -> pid_t { stub() }
 @available(Android 33, *)
 func AIBinder_isHandlingTransaction() -> Bool { stub() }
 func AIBinder_debugGetRefCount(_ binder: OpaquePointer) -> Int32 { stub() }
+func AIBinder_getUserData(_ binder: OpaquePointer) -> UnsafeMutableRawPointer? { stub() }
+@available(Android 31, *)
+func AIBinder_lt(_ lhs: OpaquePointer, _ rhs: OpaquePointer) -> Bool { stub() }
 
 // MARK: - Binder Weak Reference (API 29)
 
@@ -73,6 +76,8 @@ func AIBinder_Weak_new(_ binder: OpaquePointer) -> OpaquePointer? { stub() }
 func AIBinder_Weak_delete(_ weakBinder: OpaquePointer) { stub() }
 func AIBinder_Weak_promote(_ weakBinder: OpaquePointer) -> OpaquePointer? { stub() }
 
+@available(Android 31, *)
+func AIBinder_Weak_clone(_ weak: OpaquePointer) -> OpaquePointer? { stub() }
 @available(Android 31, *)
 func AIBinder_Weak_lt(_ lhs: OpaquePointer, _ rhs: OpaquePointer) -> Bool { stub() }
 
