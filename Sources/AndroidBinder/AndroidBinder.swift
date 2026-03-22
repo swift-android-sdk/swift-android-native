@@ -75,31 +75,25 @@ public final class AndroidBinder {
     }
 
     /**
-     * Creates a new binder object of the appropriate class.
+     * Creates a new local binder object of the given class.
      *
-     * Ownership of args is passed to this object. The lifecycle is implemented with AIBinder_incStrong
-     * and AIBinder_decStrong. When the reference count reaches zero, onDestroy is called.
+     * The `userData` pointer is passed to the class's `onCreate` callback and can be
+     * retrieved later from within binder callbacks.
      *
-     * When this is called, the refcount is implicitly 1. So, calling decStrong exactly one time is
-     * required to delete this object.
-     *
-     * Once an AIBinder object is created using this API, re-creating that AIBinder for the same
-     * instance of the same class will break pointer equality for that specific AIBinder object. For
-     * instance, if someone erroneously created two AIBinder instances representing the same callback
-     * object and passed one to a hypothetical addCallback function and then later another one to a
-     * hypothetical removeCallback function, the remote process would have no way to determine that
-     * these two objects are actually equal using the AIBinder pointer alone (which they should be able
-     * to do). Also see the suggested memory ownership model suggested above.
+     * The refcount starts at 1; the object is destroyed when it reaches zero.
      *
      * Available since API level 29.
      *
-     * \param clazz the type of the object to be created.
-     * \param args the args to pass to AIBinder_onCreate for that class.
+     * \param binderClass the type of the object to be created.
+     * \param userData an arbitrary pointer forwarded to the class's `onCreate` callback.
      *
-     * \return a binder object representing the newly instantiated object.
+     * \return a binder object, or `nil` on failure.
      */
-    public init(class: borrowing BinderClass, arguments: [String] = []) {
-        fatalError()
+    public init?(class binderClass: BinderClass, userData: UnsafeMutableRawPointer? = nil) {
+        guard let handle = Handle.create(class: binderClass, userData: userData) else {
+            return nil
+        }
+        self.handle = handle
     }
 }
 
@@ -231,6 +225,58 @@ public extension AndroidBinder {
     func dump(to destination: FileDescriptor, arguments: [String] = []) throws(AndroidBinderError) {
         try handle.dump(to: destination, arguments: arguments).get()
     }
+
+    /**
+     * Gets the extension registered on this binder.
+     *
+     * See also `setExtension`.
+     *
+     * Available since API level 30.
+     *
+     * \return the extension binder, or `nil` if none is registered or on error.
+     */
+    @available(Android 30, *)
+    func getExtension() throws(AndroidBinderError) -> AndroidBinder? {
+        try handle.getExtension().get()
+    }
+
+    /**
+     * Creates a weak reference to this binder.
+     *
+     * Available since API level 29.
+     *
+     * \return a weak reference, or `nil` on allocation failure.
+     */
+    func weakReference() -> AndroidBinderWeak? {
+        handle.weakReference()
+    }
+
+    /**
+     * Registers a death recipient to be called when the remote process hosting this
+     * binder dies.
+     *
+     * The `cookie` is passed back to the recipient's `onDied` callback.
+     *
+     * Available since API level 29.
+     *
+     * \param recipient the death recipient to register.
+     * \param cookie an arbitrary pointer forwarded to the recipient's callbacks.
+     */
+    func linkToDeath(_ recipient: DeathRecipient, cookie: UnsafeMutableRawPointer? = nil) throws(AndroidBinderError) {
+        try handle.linkToDeath(recipient, cookie: cookie).get()
+    }
+
+    /**
+     * Unregisters a previously registered death recipient.
+     *
+     * Available since API level 29.
+     *
+     * \param recipient the death recipient to unregister.
+     * \param cookie the cookie that was passed to `linkToDeath`.
+     */
+    func unlinkToDeath(_ recipient: DeathRecipient, cookie: UnsafeMutableRawPointer? = nil) throws(AndroidBinderError) {
+        try handle.unlinkToDeath(recipient, cookie: cookie).get()
+    }
 }
 
 // MARK: - Supporting Types
@@ -346,5 +392,43 @@ internal extension AndroidBinder.Handle {
      */
     func dump(to destination: FileDescriptor, arguments: [String] = []) -> Result<Void, AndroidBinderError> {
         fatalError()
+    }
+
+    /**
+     * Available since API level 29.
+     */
+    static func create(class binderClass: BinderClass, userData: UnsafeMutableRawPointer?) -> Handle? {
+        AIBinder_new(binderClass.handle.pointer, userData).map { .init($0) }
+    }
+
+    /**
+     * Available since API level 30.
+     */
+    @available(Android 30, *)
+    func getExtension() -> Result<AndroidBinder?, AndroidBinderError> {
+        var out: OpaquePointer?
+        let status = AIBinder_getExtension(pointer, &out)
+        return status.mapError(out.map { AndroidBinder($0) })
+    }
+
+    /**
+     * Available since API level 29.
+     */
+    func weakReference() -> AndroidBinderWeak? {
+        AIBinder_Weak_new(pointer).map { AndroidBinderWeak($0) }
+    }
+
+    /**
+     * Available since API level 29.
+     */
+    func linkToDeath(_ recipient: DeathRecipient, cookie: UnsafeMutableRawPointer?) -> Result<Void, AndroidBinderError> {
+        AIBinder_linkToDeath(pointer, recipient.handle.pointer, cookie).mapError()
+    }
+
+    /**
+     * Available since API level 29.
+     */
+    func unlinkToDeath(_ recipient: DeathRecipient, cookie: UnsafeMutableRawPointer?) -> Result<Void, AndroidBinderError> {
+        AIBinder_unlinkToDeath(pointer, recipient.handle.pointer, cookie).mapError()
     }
 }
