@@ -77,6 +77,21 @@ public extension AndroidBinderWeak {
     }
 
     /**
+     * Clones this weak reference.
+     *
+     * Useful because even if a weak binder currently promotes to `nil`, after
+     * further binder transactions it may become promotable again.
+     *
+     * Available since API level 31.
+     *
+     * \return a new independent weak reference to the same binder, or `nil` on allocation failure.
+     */
+    @available(Android 31, *)
+    func clone() -> AndroidBinderWeak? {
+        handle.clone().map { AndroidBinderWeak($0) }
+    }
+
+    /**
      * Whether this weak reference compares less than another, providing a stable
      * ordering for use in sorted collections.
      *
@@ -114,6 +129,11 @@ internal extension AndroidBinderWeak.Handle {
 
     func promote() -> AndroidBinder? {
         AIBinder_Weak_promote(pointer).map { AndroidBinder($0) }
+    }
+
+    @available(Android 31, *)
+    func clone() -> AndroidBinderWeak.Handle? {
+        AIBinder_Weak_clone(pointer).map { .init($0) }
     }
 
     @available(Android 31, *)
