@@ -138,14 +138,14 @@ let package = Package(
             dependencies: [
                 "AndroidChoreographer"
             ]),
-        
+
         .target(
             name: "AndroidManifest",
             dependencies: [
                 "CAndroidNDK"
             ],
             swiftSettings: [
-              ndkVersionDefine,
+                ndkVersionDefine,
                 sdkVersionDefine,
             ],
             linkerSettings: [
@@ -159,7 +159,7 @@ let package = Package(
                 "AndroidLooper",
             ],
             swiftSettings: [
-              ndkVersionDefine,
+                ndkVersionDefine,
                 sdkVersionDefine,
             ],
             linkerSettings: [
@@ -173,7 +173,7 @@ let package = Package(
                 "AndroidLooper",
             ],
             swiftSettings: [
-              ndkVersionDefine,
+                ndkVersionDefine,
                 sdkVersionDefine,
             ],
             linkerSettings: [
