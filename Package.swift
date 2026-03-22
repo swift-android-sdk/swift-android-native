@@ -54,6 +54,9 @@ let package = Package(
         .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
         .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
         .library(name: "AndroidChoreographer", targets: ["AndroidChoreographer"]),
+        .library(name: "AndroidManifest", targets: ["AndroidManifest"]),
+        .library(name: "AndroidInput", targets: ["AndroidInput"]),
+        .library(name: "AndroidHardware", targets: ["AndroidHardware"]),
     ],
     dependencies: [
         swiftJavaJNICoreDep
@@ -135,6 +138,48 @@ let package = Package(
             dependencies: [
                 "AndroidChoreographer"
             ]),
+        
+        .target(
+            name: "AndroidManifest",
+            dependencies: [
+                "CAndroidNDK"
+            ],
+            swiftSettings: [
+              ndkVersionDefine,
+              sdkVersionDefine
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
+        .target(
+            name: "AndroidInput",
+            dependencies: [
+                "CAndroidNDK",
+                "AndroidLooper"
+            ],
+            swiftSettings: [
+              ndkVersionDefine,
+              sdkVersionDefine
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
+        .target(
+            name: "AndroidHardware",
+            dependencies: [
+                "CAndroidNDK",
+                "AndroidLooper"
+            ],
+            swiftSettings: [
+              ndkVersionDefine,
+              sdkVersionDefine
+            ],
+            linkerSettings: [
+                .linkedLibrary("android", .when(platforms: [.android]))
+            ]
+        ),
         .target(
             name: "AndroidNative",
             dependencies: [
