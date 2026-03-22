@@ -12,7 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if os(Linux) || os(Android)
+#if os(Android)
 public extension SocketDescriptor {
 
     /// File descriptor for event notification
