@@ -12,7 +12,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
@@ -63,9 +62,10 @@ func ALooper_pollAll(
     _ outData: UnsafeMutablePointer<UnsafeMutableRawPointer?>?
 ) -> Int32 { stub() }
 
-public typealias ALooper_callbackFunc = @convention(c) (
-    Int32, Int32, UnsafeMutableRawPointer?
-) -> Int32
+public typealias ALooper_callbackFunc =
+    @convention(c) (
+        Int32, Int32, UnsafeMutableRawPointer?
+    ) -> Int32
 
 func ALooper_addFd(
     _ looper: OpaquePointer,

@@ -96,13 +96,15 @@ public class AndroidContext: @unchecked Sendable {
         do {
             jvm = try JavaVirtualMachine.shared()
             env = try jvm.environment()
-        }
-        catch let error as JavaVirtualMachine.VMError {
+        } catch {
             return .failure(.virtualMachine(error))
         }
-        catch {
-            fatalError("Non-JavaVirtualMachine.VMError error thrown")
-        }
+        // TODO: needs https://github.com/swiftlang/swift-java-jni-core/pull/12
+        // } catch let error as JavaVirtualMachine.VMError {
+        //     return .failure(.virtualMachine(error))
+        // } catch {
+        //     fatalError("Non-JavaVirtualMachine.VMError error thrown")
+        // }
         let jni: JNINativeInterface = env.pointee!.pointee
 
         // if we have provided a manual context jobject, then we just use that and skip trying to access the factory
@@ -153,7 +155,7 @@ public class AndroidContext: @unchecked Sendable {
         let contextClass: jclass = jni.GetObjectClass(env, pointer)!
         let getAssetsID: jmethodID = jni.GetMethodID(env, contextClass, "getAssets", "()Landroid/content/res/AssetManager;")!
         let assetManagerObj: jobject = jni.CallObjectMethodA(env, pointer, getAssetsID, [])!
-        
+
         return AssetManager.fromJava(assetManagerObj, environment: env)!
     }
 

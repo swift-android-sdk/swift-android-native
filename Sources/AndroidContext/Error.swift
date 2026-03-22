@@ -15,10 +15,12 @@
 import SwiftJavaJNICore
 
 public enum AndroidContextError: Error {
-    
+
     case classNotFound(String)
     case methodNotFound(String)
     case nullValueForMethod(String)
     case invalidSignature(String)
-    case virtualMachine(JavaVirtualMachine.VMError)
+    case virtualMachine(Error)
+    // TODO: needs https://github.com/swiftlang/swift-java-jni-core/pull/12
+    //case virtualMachine(JavaVirtualMachine.VMError)
 }

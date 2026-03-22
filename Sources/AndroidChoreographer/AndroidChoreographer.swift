@@ -30,15 +30,15 @@ import CAndroidNDK
 @available(iOS, unavailable)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
-public struct AndroidChoreographer : @unchecked Sendable {
-    
+public struct AndroidChoreographer: @unchecked Sendable {
+
     private let pointer: OpaquePointer
 
     /// Get the AChoreographer instance for the main thread.
     ///
     /// Must be initialized at startup time with `setupMainChoreographer()`
     public nonisolated(unsafe) private(set) static var main: AndroidChoreographer!
-    
+
     /// Get the AChoreographer instance for the current thread.
     ///
     /// This must be called on an ALooper thread.
@@ -57,7 +57,7 @@ public struct AndroidChoreographer : @unchecked Sendable {
         }
     }
 
-    public func postFrameCallback(_ callback: @convention(c)(Int, UnsafeMutableRawPointer?) -> ()) {
+    public func postFrameCallback(_ callback: @convention(c) (Int, UnsafeMutableRawPointer?) -> ()) {
         AChoreographer_postFrameCallback(pointer, callback, nil)
     }
 }

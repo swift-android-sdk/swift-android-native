@@ -32,17 +32,17 @@ import AndroidSystem
  * A thread can have only one `ALooper` associated with it.
  */
 public struct Looper: ~Copyable {
-    
+
     internal let handle: Handle
-    
+
     /// Whether the handle is "owned" and we need to release on deinit.
     internal let isRetained: Bool
-    
+
     internal init(_ handle: Handle, retain: Bool) {
         self.handle = handle
         self.isRetained = retain
     }
-    
+
     deinit {
         if isRetained {
             handle.release()
@@ -53,51 +53,51 @@ public struct Looper: ~Copyable {
 // MARK: - Initialization
 
 public extension Looper {
-    
+
     /// Directly initialize from a pointer and retain the underlying object.
     init(_ pointer: OpaquePointer) {
         self.init(Handle(pointer), retain: true) // retains by default
     }
-    
+
     /// Initialize from a pointer without retaining the underlying object.
     static func takeUnretained(from pointer: OpaquePointer) -> Looper {
         // equivalent to
         // Unmanaged<AnyObject>.fromOpaque(pointer).takeUnretainedValue()
         self.init(Handle(pointer), retain: false)
     }
-    
+
     /// Initialize from another instance and retain the underlying object.
     init(_ other: borrowing Looper) {
         self.init(other.handle, retain: true)
     }
-    
+
     /// Gets the looper for the current thread, if any.
     ///
     /// The instance is retained.
     static var currentThread: Looper? {
         Handle.forThread().flatMap { .init($0, retain: true) }
     }
-    
+
     /// Gets the looper for the current thread, if any and provides a borrowed instance to use.
     ///
     /// The instance is not retained and only valid for the duration of ``body``.
     static func currentThread<T, E>(_ body: (borrowing Looper) throws(E) -> (T)) throws(E) -> T? {
         let looper = Looper.Handle
             .forThread()
-            .flatMap{ Looper($0, retain: false) } // don't retain this instance
+            .flatMap { Looper($0, retain: false) } // don't retain this instance
         guard let looper else {
             return nil
         }
         return try body(looper)
     }
-    
+
     /// Prepares a looper associated with the calling thread, and returns it.
     ///
     /// The instance is retained.
     static func currentThread(options: PrepareOptions) -> Looper {
         Looper(.prepare(options: options), retain: true)
     }
-    
+
     /// Gets the looper for the current thread, if any and provides a borrowed instance to use.
     ///
     /// The instance is not retained and only valid for the duration of ``body``.
@@ -110,19 +110,18 @@ public extension Looper {
 // MARK: - Properties
 
 public extension Looper {
-    
-    
+
 }
 
 // MARK: - Methods
 
 public extension Looper {
-    
+
     /// Access the underlying opaque pointer.
     func withUnsafePointer<E, Result>(_ body: (OpaquePointer) throws(E) -> Result) throws(E) -> Result where E: Swift.Error {
         try body(handle.pointer)
     }
-    
+
     /**
      * Wakes the poll asynchronously.
      *
@@ -132,7 +131,7 @@ public extension Looper {
     func wake() {
         handle.wake()
     }
-    
+
     /**
      * Removes a previously added file descriptor from the looper.
      *
@@ -158,27 +157,26 @@ public extension Looper {
 // MARK: - Supporting Types
 
 public extension Looper {
-    
-    
+
 }
 
 internal extension Looper.Handle {
-    
+
     typealias Callback = @convention(c) (CInt, CInt, UnsafeMutableRawPointer?) -> CInt
-    
+
     /// 1 if the file descriptor was removed, 0 if none was previously registered or -1 if an error occurred.
     enum RemoveFileDescriptorResult: CInt, Sendable, CaseIterable {
-        
+
         /// File descriptor was not previously registered.
         case invalid = 0
-        
+
         /// File descriptor was removed.
         case removed = 1
-        
+
         /// Error ocurred
         case error = -1
     }
-    
+
     struct PollResult: Identifiable {
         public let id: CInt
         public let fd: FileDescriptor
@@ -188,7 +186,7 @@ internal extension Looper.Handle {
 }
 
 internal extension Looper.Handle.RemoveFileDescriptorResult {
-    
+
     init(_ raw: RawValue) {
         guard let value = Self.init(rawValue: raw) else {
             assertionFailure("Invalid \(Self.self): \(raw)")
@@ -197,7 +195,7 @@ internal extension Looper.Handle.RemoveFileDescriptorResult {
         }
         self = value
     }
-    
+
     func map(_ value: FileDescriptor) -> Result<Void, AndroidLooperError> {
         switch self {
         case .removed:
@@ -211,11 +209,11 @@ internal extension Looper.Handle.RemoveFileDescriptorResult {
 }
 
 internal extension Looper {
-    
+
     struct Handle {
-        
+
         let pointer: OpaquePointer
-        
+
         init(_ pointer: OpaquePointer) {
             self.pointer = pointer
         }
@@ -223,7 +221,7 @@ internal extension Looper {
 }
 
 internal extension Looper.Handle {
-    
+
     /**
      * Returns the looper associated with the calling thread, or NULL if
      * there is not one.
@@ -231,7 +229,7 @@ internal extension Looper.Handle {
     static func forThread() -> Looper.Handle? {
         ALooper_forThread().flatMap { .init($0) }
     }
-    
+
     /**
      * Prepares a looper associated with the calling thread, and returns it.
      * If the thread already has a looper, it is returned.  Otherwise, a new
@@ -245,7 +243,7 @@ internal extension Looper.Handle {
         }
         return Looper.Handle(pointer)
     }
-    
+
     /**
      * Acquire a reference on the given `ALooper` object.  This prevents the object
      * from being deleted until the reference is removed.  This is only needed
@@ -254,14 +252,14 @@ internal extension Looper.Handle {
     func retain() {
         ALooper_acquire(pointer)
     }
-    
+
     /**
      * Remove a reference that was previously acquired with `ALooper_acquire()`.
      */
     func release() {
         ALooper_release(pointer)
     }
-    
+
     /**
      * Wakes the poll asynchronously.
      *
@@ -271,7 +269,7 @@ internal extension Looper.Handle {
     func wake() {
         ALooper_wake(pointer)
     }
-    
+
     /**
      * Adds a new file descriptor to be polled by the looper.
      * If the same file descriptor was previously added, it is replaced.
@@ -318,7 +316,7 @@ internal extension Looper.Handle {
         }
         return .success(())
     }
-    
+
     /**
      * Removes a previously added file descriptor from the looper.
      *
@@ -340,13 +338,13 @@ internal extension Looper.Handle {
         let result = ALooper_removeFd(pointer, fileDescriptor.rawValue)
         return .init(result)
     }
-    
+
     /// Waits for events to be available, with optional timeout in milliseconds.
     @available(macOS 13.0, *)
     func pollOnce(duration: Duration? = nil) -> Result<PollResult?, AndroidLooperError> {
         pollOnce(milliseconds: duration?.milliseconds)
     }
-    
+
     /**
      * Waits for events to be available, with optional timeout in milliseconds.
      * Invokes callbacks for all file descriptors on which an event occurred.
@@ -384,7 +382,7 @@ internal extension Looper.Handle {
         var outEvents: CInt = 0
         var outData: UnsafeMutableRawPointer?
         let timeoutMillis: CInt = milliseconds.map { CInt($0) } ?? 0
-        
+
         let err = ALooper_pollOnce(timeoutMillis, &outFd, &outEvents, &outData)
         switch Int(err) {
         case ALOOPER_POLL_WAKE:

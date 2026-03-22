@@ -26,10 +26,10 @@ import Dispatch
 public actor AndroidMainActor: GlobalActor {
 
     public static let shared = AndroidMainActor()
-    
+
     public static let sharedUnownedExecutor: UnownedSerialExecutor = {
         // ensure executor is retained to avoid crash
-         // https://forums.swift.org/t/how-to-properly-use-custom-executor-on-global-actor/71829/4
+        // https://forums.swift.org/t/how-to-properly-use-custom-executor-on-global-actor/71829/4
         guard let executor = AndroidMainActor.executor else {
             fatalError("Executor was never installed")
         }
@@ -48,25 +48,24 @@ public extension AndroidMainActor {
     ///
     /// - Note: Make sure to call from main thread.
     static func setupMainLooper() -> Bool {
-        
+
         // release previous looper and executor
         executor = nil
-        
+
         // acquire looper for current thread (retained)
         guard let looper = Looper.currentThread else {
             // this happens sometimes when running in test cases
             return false
         }
-        
+
         // the public API should always be retained.
         assert(looper.isRetained)
-        
+
         // override the global executors to wake the main looper to drain the queue whenever something is scheduled
         do {
             let executor = try Looper.Executor(looper: looper)
             return try AndroidMainActor.installGlobalExecutor(executor)
-        }
-        catch {
+        } catch {
             return false
         }
     }
@@ -74,7 +73,7 @@ public extension AndroidMainActor {
 
 @available(macOS 13.0, *)
 extension Looper {
-    
+
     /// Returns the main Looper setup with `AndroidMainActor`
     static var main: Self {
         guard let executor = AndroidMainActor.executor else {
@@ -86,9 +85,9 @@ extension Looper {
 
 @available(macOS 13.0, *)
 private extension AndroidMainActor {
-    
+
     nonisolated(unsafe) static var didInstallGlobalExecutor = false
-        
+
     nonisolated(unsafe) static var executor: Looper.Executor?
 
     /// Set Android event loop based executor to be the global executor
@@ -122,11 +121,11 @@ private extension AndroidMainActor {
                 }
             }
         }
-        
+
         let mainLoop = CFRunLoopGetMain() // initialize main loop
         let dispatchPort = _dispatch_get_main_queue_port_4CF()
         let fileDescriptor = FileDescriptor(rawValue: dispatchPort)
-        
+
         try executor.looper.handle.add(
             fileDescriptor: fileDescriptor,
             id: 0,
@@ -134,7 +133,7 @@ private extension AndroidMainActor {
             callback: looperCallback,
             data: nil
         ).get()
-        
+
         // install executor
         self.executor = executor
         _ = mainLoop

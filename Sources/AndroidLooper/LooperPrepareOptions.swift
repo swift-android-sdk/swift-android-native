@@ -18,18 +18,18 @@ import CAndroidNDK
 #endif
 
 public extension Looper {
-    
+
     /// Looper Prepare Options
     struct PrepareOptions: OptionSet, Sendable {
-        
+
         public typealias RawValue = Int
-        
+
         public var rawValue: RawValue
 
         public init(rawValue: RawValue) {
             self.init(rawValue)
         }
-        
+
         private init(_ raw: RawValue) {
             self.rawValue = raw
         }
@@ -39,7 +39,7 @@ public extension Looper {
 // MARK: - Constants
 
 public extension Looper.PrepareOptions {
-    
+
     /**
      * This looper will accept calls to ALooper_addFd() that do not
      * have a callback (that is provide NULL for the callback).  In
@@ -53,7 +53,7 @@ public extension Looper.PrepareOptions {
 // MARK: - CustomStringConvertible
 
 extension Looper.PrepareOptions: CustomStringConvertible, CustomDebugStringConvertible {
-    
+
     /// A textual representation of the binder object flags.
     @inline(never)
     public var description: String {
