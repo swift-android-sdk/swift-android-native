@@ -54,12 +54,12 @@ public extension StorageManager {
     }
 
     /// Asks Android to mount an OBB container, returning the resulting `ObbState`.
-    func mountObb(path: String, key: String? = nil) async -> ObbState {
-        await withCheckedContinuation { continuation in
+    func mountObb(path: String, key: String? = nil) async throws(AndroidFileManagerError) -> ObbState {
+        try await withCheckedContinuation { continuation in
             handle.mountObb(path: path, key: key) { _, state in
                 continuation.resume(returning: state)
             }
-        }
+        }.get()
     }
 
     /// Asks Android to unmount an OBB container.
@@ -68,12 +68,12 @@ public extension StorageManager {
     }
 
     /// Asks Android to unmount an OBB container, returning the resulting `ObbState`.
-    func unmountObb(path: String, force: Bool = false) async -> ObbState {
-        await withCheckedContinuation { continuation in
+    func unmountObb(path: String, force: Bool = false) async throws(AndroidFileManagerError) -> ObbState {
+        try await withCheckedContinuation { continuation in
             handle.unmountObb(path: path, force: force) { _, state in
                 continuation.resume(returning: state)
             }
-        }
+        }.get()
     }
 
     /// Returns whether the OBB at `path` is mounted.
@@ -123,12 +123,12 @@ internal extension StorageManager.Handle {
         }
     }
 
-    func mountObb(path: String, key: String? = nil, onComplete: @escaping (String, ObbState) -> Void) {
+    func mountObb(path: String, key: String? = nil, onComplete: @escaping (String, ObbStateResult) -> Void) {
         let box = Unmanaged.passRetained(ObbCallback(onComplete))
         let thunk: @convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void = { filename, state, data in
             let box = Unmanaged<ObbCallback>.fromOpaque(data!).takeRetainedValue()
             let path = filename.map { String(cString: $0) } ?? ""
-            box.body(path, ObbState(rawValue: state) ?? .errorInternal)
+            box.body(path, ObbStateResult(state))
         }
         path.withCString { pathCString in
             if let key {
@@ -147,12 +147,12 @@ internal extension StorageManager.Handle {
         }
     }
 
-    func unmountObb(path: String, force: Bool = false, onComplete: @escaping (String, ObbState) -> Void) {
+    func unmountObb(path: String, force: Bool = false, onComplete: @escaping (String, ObbStateResult) -> Void) {
         let box = Unmanaged.passRetained(ObbCallback(onComplete))
         let thunk: @convention(c) (UnsafePointer<CChar>?, Int32, UnsafeMutableRawPointer?) -> Void = { filename, state, data in
             let box = Unmanaged<ObbCallback>.fromOpaque(data!).takeRetainedValue()
             let path = filename.map { String(cString: $0) } ?? ""
-            box.body(path, ObbState(rawValue: state) ?? .errorInternal)
+            box.body(path, ObbStateResult(state))
         }
         path.withCString {
             AStorageManager_unmountObb(pointer, $0, force ? 1 : 0, thunk, box.toOpaque())
@@ -179,8 +179,8 @@ internal extension StorageManager.Handle {
 
 /// Box for bridging a Swift OBB callback to a C function pointer.
 internal final class ObbCallback {
-    let body: (String, ObbState) -> Void
-    init(_ body: @escaping (String, ObbState) -> Void) {
+    let body: (String, ObbStateResult) -> Void
+    init(_ body: @escaping (String, ObbStateResult) -> Void) {
         self.body = body
     }
 }
