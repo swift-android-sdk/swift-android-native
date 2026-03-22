@@ -39,11 +39,9 @@ public extension SensorManager {
     ///
     /// - Parameter package: The package name of the calling application
     ///   (e.g. `"com.example.myapp"`).
-    /// - Throws: `AndroidSensorError.invalidManager` if the system could not
-    ///   return a sensor manager for the provided package.
-    init(package: String) throws(AndroidSensorError) {
+    init?(package: String) {
         guard let pointer = package.withCString({ ASensorManager_getInstanceForPackage($0) }) else {
-            throw .invalidManager
+            return nil
         }
         self.init(pointer)
     }
