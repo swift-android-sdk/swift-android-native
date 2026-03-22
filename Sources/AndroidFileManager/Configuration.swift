@@ -127,114 +127,113 @@ public extension Configuration {
         }
     }
 
-    /// Screen orientation. One of the `ACONFIGURATION_ORIENTATION_*` constants.
-    var orientation: Int32 {
-        get { AConfiguration_getOrientation(pointer) }
-        set { AConfiguration_setOrientation(pointer, newValue) }
+    /// Screen orientation.
+    var orientation: Orientation {
+        get { Orientation(rawValue: AConfiguration_getOrientation(pointer)) ?? .any }
+        set { AConfiguration_setOrientation(pointer, newValue.rawValue) }
     }
 
-    /// Touchscreen type. One of the `ACONFIGURATION_TOUCHSCREEN_*` constants.
-    var touchscreen: Int32 {
-        get { AConfiguration_getTouchscreen(pointer) }
-        set { AConfiguration_setTouchscreen(pointer, newValue) }
+    /// Touchscreen type.
+    var touchscreen: Touchscreen {
+        get { Touchscreen(rawValue: AConfiguration_getTouchscreen(pointer)) ?? .any }
+        set { AConfiguration_setTouchscreen(pointer, newValue.rawValue) }
     }
 
-    /// Screen density in DPI. One of the `ACONFIGURATION_DENSITY_*` constants,
-    /// or an explicit DPI value.
-    var density: Int32 {
-        get { AConfiguration_getDensity(pointer) }
-        set { AConfiguration_setDensity(pointer, newValue) }
+    /// Screen density. Use ``Density/other(_:)`` for explicit DPI values
+    /// not covered by a named bucket.
+    var density: Density {
+        get { Density(rawValue: AConfiguration_getDensity(pointer)) }
+        set { AConfiguration_setDensity(pointer, newValue.rawValue) }
     }
 
-    /// Keyboard type. One of the `ACONFIGURATION_KEYBOARD_*` constants.
-    var keyboard: Int32 {
-        get { AConfiguration_getKeyboard(pointer) }
-        set { AConfiguration_setKeyboard(pointer, newValue) }
+    /// Keyboard type.
+    var keyboard: Keyboard {
+        get { Keyboard(rawValue: AConfiguration_getKeyboard(pointer)) ?? .any }
+        set { AConfiguration_setKeyboard(pointer, newValue.rawValue) }
     }
 
-    /// Navigation method. One of the `ACONFIGURATION_NAVIGATION_*` constants.
-    var navigation: Int32 {
-        get { AConfiguration_getNavigation(pointer) }
-        set { AConfiguration_setNavigation(pointer, newValue) }
+    /// Navigation input method.
+    var navigation: Navigation {
+        get { Navigation(rawValue: AConfiguration_getNavigation(pointer)) ?? .any }
+        set { AConfiguration_setNavigation(pointer, newValue.rawValue) }
     }
 
-    /// Keyboard availability. One of the `ACONFIGURATION_KEYSHIDDEN_*` constants.
-    var keysHidden: Int32 {
-        get { AConfiguration_getKeysHidden(pointer) }
-        set { AConfiguration_setKeysHidden(pointer, newValue) }
+    /// Hardware keyboard availability.
+    var keysHidden: KeyAvailability {
+        get { KeyAvailability(rawValue: AConfiguration_getKeysHidden(pointer)) ?? .any }
+        set { AConfiguration_setKeysHidden(pointer, newValue.rawValue) }
     }
 
-    /// Navigation availability. One of the `ACONFIGURATION_NAVHIDDEN_*` constants.
-    var navHidden: Int32 {
-        get { AConfiguration_getNavHidden(pointer) }
-        set { AConfiguration_setNavHidden(pointer, newValue) }
+    /// Hardware navigation availability.
+    var navHidden: NavAvailability {
+        get { NavAvailability(rawValue: AConfiguration_getNavHidden(pointer)) ?? .any }
+        set { AConfiguration_setNavHidden(pointer, newValue.rawValue) }
     }
 
-    /// Minimum Android SDK (API) version required. Corresponds to `ACONFIGURATION_VERSION`.
+    /// Minimum Android SDK (API) version required.
     var sdkVersion: Int32 {
         get { AConfiguration_getSdkVersion(pointer) }
         set { AConfiguration_setSdkVersion(pointer, newValue) }
     }
 
-    /// Screen size bucket. One of the `ACONFIGURATION_SCREENSIZE_*` constants.
-    var screenSize: Int32 {
-        get { AConfiguration_getScreenSize(pointer) }
-        set { AConfiguration_setScreenSize(pointer, newValue) }
+    /// Screen size bucket.
+    var screenSize: ScreenSize {
+        get { ScreenSize(rawValue: AConfiguration_getScreenSize(pointer)) ?? .any }
+        set { AConfiguration_setScreenSize(pointer, newValue.rawValue) }
     }
 
-    /// Whether the screen is long. One of the `ACONFIGURATION_SCREENLONG_*` constants.
-    var screenLong: Int32 {
-        get { AConfiguration_getScreenLong(pointer) }
-        set { AConfiguration_setScreenLong(pointer, newValue) }
+    /// Whether the screen has a long aspect ratio.
+    var screenLong: ScreenLong {
+        get { ScreenLong(rawValue: AConfiguration_getScreenLong(pointer)) ?? .any }
+        set { AConfiguration_setScreenLong(pointer, newValue.rawValue) }
     }
 
-    /// Whether the screen is round. One of the `ACONFIGURATION_SCREENROUND_*` constants.
-    var screenRound: Int32 {
-        get { AConfiguration_getScreenRound(pointer) }
-        set { AConfiguration_setScreenRound(pointer, newValue) }
+    /// Whether the screen is round.
+    var screenRound: ScreenRound {
+        get { ScreenRound(rawValue: AConfiguration_getScreenRound(pointer)) ?? .any }
+        set { AConfiguration_setScreenRound(pointer, newValue.rawValue) }
     }
 
-    /// UI mode type (car, desk, television, etc.). One of the `ACONFIGURATION_UI_MODE_TYPE_*` constants.
-    var uiModeType: Int32 {
-        get { AConfiguration_getUiModeType(pointer) }
-        set { AConfiguration_setUiModeType(pointer, newValue) }
+    /// UI mode type (car, desk, television, etc.).
+    var uiModeType: UIModeType {
+        get { UIModeType(rawValue: AConfiguration_getUiModeType(pointer)) ?? .any }
+        set { AConfiguration_setUiModeType(pointer, newValue.rawValue) }
     }
 
-    /// Night mode. One of the `ACONFIGURATION_UI_MODE_NIGHT_*` constants.
-    var uiModeNight: Int32 {
-        get { AConfiguration_getUiModeNight(pointer) }
-        set { AConfiguration_setUiModeNight(pointer, newValue) }
+    /// Night/dark mode setting.
+    var uiModeNight: NightMode {
+        get { NightMode(rawValue: AConfiguration_getUiModeNight(pointer)) ?? .any }
+        set { AConfiguration_setUiModeNight(pointer, newValue.rawValue) }
     }
 
-    /// Current screen width in dp units, or `ACONFIGURATION_SCREEN_WIDTH_DP_ANY` if not set.
+    /// Current screen width in dp units, or 0 if not set.
     var screenWidthDp: Int32 {
         get { AConfiguration_getScreenWidthDp(pointer) }
         set { AConfiguration_setScreenWidthDp(pointer, newValue) }
     }
 
-    /// Current screen height in dp units, or `ACONFIGURATION_SCREEN_HEIGHT_DP_ANY` if not set.
+    /// Current screen height in dp units, or 0 if not set.
     var screenHeightDp: Int32 {
         get { AConfiguration_getScreenHeightDp(pointer) }
         set { AConfiguration_setScreenHeightDp(pointer, newValue) }
     }
 
-    /// Smallest screen dimension in dp units, or `ACONFIGURATION_SMALLEST_SCREEN_WIDTH_DP_ANY` if not set.
+    /// Smallest screen dimension in dp units, or 0 if not set.
     var smallestScreenWidthDp: Int32 {
         get { AConfiguration_getSmallestScreenWidthDp(pointer) }
         set { AConfiguration_setSmallestScreenWidthDp(pointer, newValue) }
     }
 
-    /// Layout direction. One of the `ACONFIGURATION_LAYOUTDIR_*` constants.
-    var layoutDirection: Int32 {
-        get { AConfiguration_getLayoutDirection(pointer) }
-        set { AConfiguration_setLayoutDirection(pointer, newValue) }
+    /// Layout direction.
+    var layoutDirection: LayoutDirection {
+        get { LayoutDirection(rawValue: AConfiguration_getLayoutDirection(pointer)) ?? .any }
+        set { AConfiguration_setLayoutDirection(pointer, newValue.rawValue) }
     }
 
-    /// Grammatical gender for locale-sensitive inflection.
-    /// One of the `ACONFIGURATION_GRAMMATICAL_GENDER_*` constants.
-    var grammaticalGender: Int32 {
-        get { AConfiguration_getGrammaticalGender(pointer) }
-        set { AConfiguration_setGrammaticalGender(pointer, newValue) }
+    /// Grammatical gender for locale-sensitive string inflection.
+    var grammaticalGender: GrammaticalGender {
+        get { GrammaticalGender(rawValue: AConfiguration_getGrammaticalGender(pointer)) ?? .any }
+        set { AConfiguration_setGrammaticalGender(pointer, newValue.rawValue) }
     }
 }
 
