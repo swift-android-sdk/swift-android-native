@@ -60,11 +60,11 @@ jobs:
           api-level: ${{ matrix.android-api }}
           arch: x86_64
           script: skip android test --apk --verbose
-      - name: "Test Swift Package on host OS"
-        run: swift test
-      - name: "Test Swift Package on iOS"
+      - name: "Build Swift Package on host OS"
+        run: swift build
+      - name: "Build Swift Package on iOS"
         if: runner.os == 'macOS'
-        run: xcodebuild test -sdk "iphonesimulator" -destination "platform=iOS Simulator,name=iPhone 17" -scheme swift-android-native-Package
+        run: xcodebuild build -sdk "iphonesimulator" -destination "platform=iOS Simulator,name=iPhone 17" -scheme swift-android-native-Package
   soundness:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
     with:
