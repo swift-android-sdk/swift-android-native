@@ -53,11 +53,13 @@ public extension StorageManager {
         handle.mountObb(path: path, key: key)
     }
 
-    /// Asks Android to mount an OBB container, invoking `onComplete` when done.
-    ///
-    /// The callback receives the OBB path and the resulting `ObbState`.
-    func mountObb(path: String, key: String? = nil, onComplete: @escaping (String, ObbState) -> Void) {
-        handle.mountObb(path: path, key: key, onComplete: onComplete)
+    /// Asks Android to mount an OBB container, returning the resulting `ObbState`.
+    func mountObb(path: String, key: String? = nil) async -> ObbState {
+        await withCheckedContinuation { continuation in
+            handle.mountObb(path: path, key: key) { _, state in
+                continuation.resume(returning: state)
+            }
+        }
     }
 
     /// Asks Android to unmount an OBB container.
@@ -65,11 +67,13 @@ public extension StorageManager {
         handle.unmountObb(path: path, force: force)
     }
 
-    /// Asks Android to unmount an OBB container, invoking `onComplete` when done.
-    ///
-    /// The callback receives the OBB path and the resulting `ObbState`.
-    func unmountObb(path: String, force: Bool = false, onComplete: @escaping (String, ObbState) -> Void) {
-        handle.unmountObb(path: path, force: force, onComplete: onComplete)
+    /// Asks Android to unmount an OBB container, returning the resulting `ObbState`.
+    func unmountObb(path: String, force: Bool = false) async -> ObbState {
+        await withCheckedContinuation { continuation in
+            handle.unmountObb(path: path, force: force) { _, state in
+                continuation.resume(returning: state)
+            }
+        }
     }
 
     /// Returns whether the OBB at `path` is mounted.
@@ -174,7 +178,7 @@ internal extension StorageManager.Handle {
 // MARK: - ObbCallback
 
 /// Box for bridging a Swift OBB callback to a C function pointer.
-private final class ObbCallback {
+internal final class ObbCallback {
     let body: (String, ObbState) -> Void
     init(_ body: @escaping (String, ObbState) -> Void) {
         self.body = body
