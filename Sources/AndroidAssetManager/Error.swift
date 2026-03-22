@@ -66,3 +66,12 @@ public extension AndroidFileManagerError {
         public static var permissionDenied: ObbErrorCode { ObbErrorCode(rawValue: 25) }
     }
 }
+
+public func ~= (code: AndroidFileManagerError.ObbErrorCode, error: any Error) -> Bool {
+    guard let error = error as? AndroidFileManagerError,
+        case .obb(let errorCode) = error
+    else {
+        return false
+    }
+    return errorCode == code
+}
