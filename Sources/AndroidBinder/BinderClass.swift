@@ -23,11 +23,11 @@ import Gblic
  * Available since API level 29.
  */
 public struct BinderClass {
-    
-    internal let pointer: OpaquePointer
 
-    internal init(_ pointer: OpaquePointer) {
-        self.pointer = pointer
+    internal let handle: Handle
+
+    internal init(_ handle: Handle) {
+        self.handle = handle
     }
 
     // AIBinder_Class has static lifetime — no deinit
@@ -36,6 +36,11 @@ public struct BinderClass {
 // MARK: - Initialization
 
 public extension BinderClass {
+
+    /// Directly initialize from a pointer.
+    init(_ pointer: OpaquePointer) {
+        self.handle = .init(pointer)
+    }
 
     /**
      * Creates a new binder class.
@@ -47,7 +52,7 @@ public extension BinderClass {
      *
      * \param descriptor a unique identifier for the class, used for sanity checks on transactions.
      * \param onCreate called when a new local binder is instantiated; receives the args passed to
-     *   AIBinder_new and returns a user-data pointer stored on the binder.
+     *   `AIBinder_new` and returns a user-data pointer stored on the binder.
      * \param onDestroy called when the last strong reference to a local binder is dropped.
      * \param onTransact called to dispatch incoming transactions.
      *
@@ -59,12 +64,17 @@ public extension BinderClass {
         onDestroy: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?,
         onTransact: (@convention(c) (OpaquePointer?, UInt32, OpaquePointer?, OpaquePointer?) -> binder_status_t)?
     ) {
-        guard let pointer = descriptor.withCString({ cString in
-            AIBinder_Class_define(cString, onCreate, onDestroy, onTransact)
-        }) else {
+        guard
+            let handle = Handle.define(
+                descriptor: descriptor,
+                onCreate: onCreate,
+                onDestroy: onDestroy,
+                onTransact: onTransact
+            )
+        else {
             return nil
         }
-        self.init(pointer)
+        self.init(handle)
     }
 }
 
@@ -79,16 +89,18 @@ public extension BinderClass {
      */
     @available(Android 31, *)
     var descriptor: String {
-        guard let cStr = AIBinder_Class_getDescriptor(pointer) else {
-            return ""
-        }
-        return String(cString: cStr)
+        handle.descriptor
     }
 }
 
 // MARK: - Methods
 
 public extension BinderClass {
+
+    /// Access the underlying opaque pointer.
+    func withUnsafePointer<E, Result>(_ body: (OpaquePointer) throws(E) -> Result) throws(E) -> Result where E: Error {
+        try body(handle.pointer)
+    }
 
     /**
      * Sets the implementation of the dump method for this class.
@@ -100,7 +112,7 @@ public extension BinderClass {
     func setOnDump(
         _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
-        AIBinder_Class_setOnDump(pointer, handler)
+        handle.setOnDump(handler)
     }
 
     /**
@@ -112,7 +124,7 @@ public extension BinderClass {
     func setHandleShellCommand(
         _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
-        AIBinder_Class_setHandleShellCommand(pointer, handler)
+        handle.setHandleShellCommand(handler)
     }
 
     /**
@@ -121,6 +133,75 @@ public extension BinderClass {
      * When disabled, the interface token is not written to or verified from the parcel
      * header. This is intended for classes that do not use AIDL-generated code.
      *
+     * Available since API level 35.
+     */
+    @available(Android 35, *)
+    func disableInterfaceTokenHeader() {
+        handle.disableInterfaceTokenHeader()
+    }
+}
+
+// MARK: - Supporting Types
+
+internal extension BinderClass {
+
+    struct Handle {
+
+        let pointer: OpaquePointer
+
+        init(_ pointer: OpaquePointer) {
+            self.pointer = pointer
+        }
+    }
+}
+
+internal extension BinderClass.Handle {
+
+    /**
+     * Available since API level 29.
+     */
+    static func define(
+        descriptor: String,
+        onCreate: (@convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?)?,
+        onDestroy: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?,
+        onTransact: (@convention(c) (OpaquePointer?, UInt32, OpaquePointer?, OpaquePointer?) -> binder_status_t)?
+    ) -> BinderClass.Handle? {
+        descriptor.withCString { cString in
+            AIBinder_Class_define(cString, onCreate, onDestroy, onTransact)
+        }.map { .init($0) }
+    }
+
+    /**
+     * Available since API level 31.
+     */
+    @available(Android 31, *)
+    var descriptor: String {
+        guard let cStr = AIBinder_Class_getDescriptor(pointer) else {
+            return ""
+        }
+        return String(cString: cStr)
+    }
+
+    /**
+     * Available since API level 29.
+     */
+    func setOnDump(
+        _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+    ) {
+        AIBinder_Class_setOnDump(pointer, handler)
+    }
+
+    /**
+     * Available since API level 31.
+     */
+    @available(Android 31, *)
+    func setHandleShellCommand(
+        _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+    ) {
+        AIBinder_Class_setHandleShellCommand(pointer, handler)
+    }
+
+    /**
      * Available since API level 35.
      */
     @available(Android 35, *)
