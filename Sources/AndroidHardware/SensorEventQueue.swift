@@ -34,7 +34,7 @@ public struct SensorEventQueue: ~Copyable {
     }
 
     deinit {
-        ASensorManager_destroyEventQueue(manager, queue)
+        _ = ASensorManager_destroyEventQueue(manager, queue)
     }
 }
 
