@@ -59,7 +59,7 @@ public struct ObbInfoFlags: OptionSet, Sendable {
     }
 
     /// The OBB is an overlay patch OBB.
-    public static let overlay = ObbInfoFlags(rawValue: 0x0001)
+    public static var overlay: ObbInfoFlags { ObbInfoFlags(rawValue: 0x0001) }
 }
 
 // MARK: - ObbInfo
@@ -71,6 +71,13 @@ public struct ObbInfo: ~Copyable {
 
     internal init(_ pointer: OpaquePointer) {
         self.pointer = pointer
+    }
+
+    public init?(path: String) {
+        guard let pointer = AObbScanner_getObbInfo(path) else {
+            return nil
+        }
+        self.init(pointer)
     }
 
     deinit {
@@ -93,17 +100,5 @@ public extension ObbInfo {
     /// The version number of this OBB.
     var version: Int32 {
         AObbInfo_getVersion(pointer)
-    }
-}
-
-// MARK: - ObbScanner
-
-/// Namespace for scanning OBB files.
-public enum ObbScanner {
-
-    /// Returns information about the OBB at the given file path, or `nil` if the file
-    /// is not a valid OBB.
-    public static func obbInfo(at path: String) -> ObbInfo? {
-        AObbScanner_getObbInfo(path).map { ObbInfo($0) }
     }
 }
