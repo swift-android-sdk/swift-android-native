@@ -43,6 +43,7 @@ public struct BinderClass {
 
 // MARK: - Initialization
 
+@available(Android 29, *)
 public extension BinderClass {
 
     /// Directly initialize from a pointer.
@@ -88,6 +89,7 @@ public extension BinderClass {
 
 // MARK: - Properties
 
+@available(Android 29, *)
 public extension BinderClass {
 
     /**
@@ -103,6 +105,7 @@ public extension BinderClass {
 
 // MARK: - Methods
 
+@available(Android 29, *)
 public extension BinderClass {
 
     /// Access the underlying opaque pointer.
@@ -118,7 +121,7 @@ public extension BinderClass {
      * Available since API level 29.
      */
     func setOnDump(
-        _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+        _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafeMutablePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
         handle.setOnDump(handler)
     }
@@ -130,7 +133,7 @@ public extension BinderClass {
      */
     @available(Android 31, *)
     func setHandleShellCommand(
-        _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+        _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafeMutablePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
         handle.setHandleShellCommand(handler)
     }
@@ -182,6 +185,7 @@ public extension BinderClass {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 internal extension BinderClass {
 
     struct Handle {
@@ -194,6 +198,7 @@ internal extension BinderClass {
     }
 }
 
+@available(Android 29, *)
 internal extension BinderClass.Handle {
 
     static func define(
@@ -216,14 +221,14 @@ internal extension BinderClass.Handle {
     }
 
     func setOnDump(
-        _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+        _ handler: (@convention(c) (OpaquePointer?, Int32, UnsafeMutablePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
         AIBinder_Class_setOnDump(pointer, handler)
     }
 
     @available(Android 31, *)
     func setHandleShellCommand(
-        _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
+        _ handler: (@convention(c) (OpaquePointer?, Int32, Int32, Int32, UnsafeMutablePointer<UnsafePointer<CChar>?>?, UInt32) -> binder_status_t)?
     ) {
         AIBinder_Class_setHandleShellCommand(pointer, handler)
     }

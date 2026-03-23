@@ -45,6 +45,7 @@ public struct AndroidBinderWeak: ~Copyable {
 
 // MARK: - Initialization
 
+@available(Android 29, *)
 public extension AndroidBinderWeak {
 
     /// Directly initialize from a pointer.
@@ -70,6 +71,7 @@ public extension AndroidBinderWeak {
 
 // MARK: - Methods
 
+@available(Android 29, *)
 public extension AndroidBinderWeak {
 
     /**
@@ -112,6 +114,7 @@ public extension AndroidBinderWeak {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 internal extension AndroidBinderWeak {
 
     struct Handle {
@@ -124,6 +127,7 @@ internal extension AndroidBinderWeak {
     }
 }
 
+@available(Android 29, *)
 internal extension AndroidBinderWeak.Handle {
 
     static func create(from binder: AndroidBinder) -> AndroidBinderWeak.Handle? {

@@ -41,6 +41,7 @@ public struct AndroidBinderError: Error {
 
 // MARK: - Properties
 
+@available(Android 29, *)
 public extension AndroidBinderError {
 
     var message: String {
@@ -55,6 +56,7 @@ public extension AndroidBinderError {
 
 // MARK: - CustomStringConvertible
 
+@available(Android 29, *)
 extension AndroidBinderError: CustomStringConvertible {
 
     public var description: String {
@@ -64,6 +66,7 @@ extension AndroidBinderError: CustomStringConvertible {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 public extension AndroidBinderError {
 
     /**
@@ -92,6 +95,7 @@ public extension AndroidBinderError {
 
 // MARK: - Constants
 
+@available(Android 29, *)
 public extension AndroidBinderError.ErrorCode {
 
     static var unknown: Self { .init(STATUS_UNKNOWN_ERROR) } // INT32_MIN
@@ -116,6 +120,7 @@ public extension AndroidBinderError.ErrorCode {
 
 // MARK: - Internal Extensions
 
+@available(Android 29, *)
 internal extension binder_status_t {
 
     func mapError(

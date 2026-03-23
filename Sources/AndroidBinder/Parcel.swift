@@ -765,6 +765,7 @@ internal extension Parcel.Handle {
 
 // MARK: - Handle: Scalar Reads
 
+@available(Android 29, *)
 internal extension Parcel.Handle {
 
     func readInt32() -> Result<Int32, AndroidBinderError> {
@@ -858,6 +859,7 @@ internal extension Parcel.Handle {
 
 // MARK: - Handle: Array Writes
 
+@available(Android 29, *)
 internal extension Parcel.Handle {
 
     func writeByteArray(_ values: [Int8]?) -> Result<Void, AndroidBinderError> {
@@ -976,6 +978,7 @@ internal extension Parcel.Handle {
 
 // MARK: - Handle: Array Reads
 
+@available(Android 29, *)
 internal extension Parcel.Handle {
 
     func readByteArray() -> Result<[Int8]?, AndroidBinderError> {

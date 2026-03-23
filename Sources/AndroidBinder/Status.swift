@@ -44,6 +44,7 @@ public struct Status: ~Copyable {
 
 // MARK: - Initialization
 
+@available(Android 29, *)
 public extension Status {
 
     /// Directly initialize from a pointer.
@@ -86,6 +87,7 @@ public extension Status {
 
 // MARK: - Properties
 
+@available(Android 29, *)
 public extension Status {
 
     /// Whether this object represents a successful transaction.
@@ -116,6 +118,7 @@ public extension Status {
 
 // MARK: - Methods
 
+@available(Android 29, *)
 public extension Status {
 
     /// Access the underlying opaque pointer.
@@ -126,6 +129,7 @@ public extension Status {
 
 // MARK: - CustomStringConvertible
 
+@available(Android 29, *)
 extension Status { //: CustomStringConvertible, CustomDebugStringConvertible {
 
     /// Get human-readable description for debugging.
@@ -137,6 +141,7 @@ extension Status { //: CustomStringConvertible, CustomDebugStringConvertible {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 internal extension Status {
 
     struct Handle {
@@ -149,6 +154,7 @@ internal extension Status {
     }
 }
 
+@available(Android 29, *)
 internal extension Status {
 
     @available(Android 30, *)
@@ -190,6 +196,7 @@ extension Status.Description {
     }
 }
 
+@available(Android 29, *)
 internal extension Status.Handle {
 
     /**

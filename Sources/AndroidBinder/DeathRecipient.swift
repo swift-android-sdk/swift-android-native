@@ -45,6 +45,7 @@ public final class DeathRecipient {
 
 // MARK: - Initialization
 
+@available(Android 29, *)
 public extension DeathRecipient {
 
     /// Directly initialize from a pointer.
@@ -71,6 +72,7 @@ public extension DeathRecipient {
 
 // MARK: - Methods
 
+@available(Android 29, *)
 public extension DeathRecipient {
 
     /**
@@ -90,6 +92,7 @@ public extension DeathRecipient {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 internal extension DeathRecipient {
 
     struct Handle {
@@ -102,6 +105,7 @@ internal extension DeathRecipient {
     }
 }
 
+@available(Android 29, *)
 internal extension DeathRecipient.Handle {
 
     static func create(onDied: (@convention(c) (UnsafeMutableRawPointer?) -> Void)?) -> DeathRecipient.Handle? {
