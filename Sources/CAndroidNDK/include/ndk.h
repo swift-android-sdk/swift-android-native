@@ -94,3 +94,10 @@ __attribute__((availability(android, introduced=31)))
 void AIBinder_Class_setHandleShellCommand(AIBinder_Class* clazz,
                                           AIBinder_handleShellCommand handleShellCommand);
 #endif
+
+// AConfiguration_setScreenRound is available since API 30 but missing from this sysroot's
+// C headers for the minimum deployment target.
+#ifdef __ANDROID__
+__attribute__((weak)) __attribute__((availability(android, introduced=30)))
+void AConfiguration_setScreenRound(AConfiguration* config, int32_t screenRound);
+#endif
