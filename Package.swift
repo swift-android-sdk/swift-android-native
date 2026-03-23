@@ -232,7 +232,8 @@ if ndkBinder {
     let binderTarget = Target.target(
         name: "AndroidBinder",
         dependencies: [
-            "CAndroidNDK"
+            "AndroidSystem",
+            "CAndroidNDK",
         ],
         swiftSettings: [
             ndkVersionDefine,
