@@ -14,20 +14,6 @@
 
 #pragma once
 
-//===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftAndroidNative open source project
-//
-// Copyright (c) 2024-2026 Skip.dev and SwiftAndroidNative project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftAndroidNative project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-//===----------------------------------------------------------------------===//
-
 // NDK headers
 #include <android/api-level.h>
 #include <android/asset_manager_jni.h>
@@ -96,3 +82,15 @@
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
+
+// Weak declarations
+
+// AIBinder_Class_setHandleShellCommand is available since API 31 but missing
+// from this sysroot's C headers (only referenced in C++ template in binder_interface_utils.h).
+#ifdef __ANDROID__
+typedef binder_status_t (*AIBinder_handleShellCommand)(AIBinder* binder, int in, int out, int err,
+                                                       const char** argv, uint32_t argc);
+__attribute__((availability(android, introduced=31)))
+void AIBinder_Class_setHandleShellCommand(AIBinder_Class* clazz,
+                                          AIBinder_handleShellCommand handleShellCommand);
+#endif
