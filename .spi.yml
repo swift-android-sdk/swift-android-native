@@ -5,7 +5,7 @@ builder:
   configs:
     - documentation_targets:
         - 'AndroidContext'
-        - 'AndroidFileManager'
-        - 'AndroidLogging'
-        - 'AndroidLooper'
-        - 'AndroidChoreographer'
+        #- 'AndroidFileManager'
+        #- 'AndroidLogging'
+        #- 'AndroidLooper'
+        #- 'AndroidChoreographer'
