@@ -58,14 +58,14 @@ jobs:
           echo "ANDROID_NDK_ROOT=" >> $GITHUB_ENV
 
       - name: "Build package for Android"
-        run: skip android build --build-tests
+        run: ANDROID_SDK_VERSION=${{ matrix.android-api }} ANDROID_NDK_VERSION=${{ matrix.android-ndk }} skip android build --build-tests
 
       - name: "Test Swift Package on Android"
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.android-api }}
           arch: x86_64
-          script: skip android test --apk --verbose
+          script: ANDROID_SDK_VERSION=${{ matrix.android-api }} ANDROID_NDK_VERSION=${{ matrix.android-ndk }}skip android test --apk --verbose
 
   soundness:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
