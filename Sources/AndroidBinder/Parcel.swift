@@ -43,6 +43,7 @@ public struct Parcel: ~Copyable {
 
 // MARK: - Initialization
 
+@available(Android 29, *)
 public extension Parcel {
 
     /// Directly initialize from a pointer.
@@ -65,6 +66,7 @@ public extension Parcel {
 
 // MARK: - Properties
 
+@available(Android 29, *)
 public extension Parcel {
 
     /**
@@ -89,6 +91,7 @@ public extension Parcel {
 
 // MARK: - Methods
 
+@available(Android 29, *)
 public extension Parcel {
 
     /// Access the underlying opaque pointer.
@@ -170,6 +173,7 @@ public extension Parcel {
 
 // MARK: - Write Methods
 
+@available(Android 29, *)
 public extension Parcel {
 
     /**
@@ -381,6 +385,7 @@ public extension Parcel {
 
 // MARK: - Read Methods
 
+@available(Android 29, *)
 public extension Parcel {
 
     /**
@@ -592,6 +597,7 @@ public extension Parcel {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 internal extension Parcel {
 
     struct Handle {
@@ -606,6 +612,7 @@ internal extension Parcel {
 
 // MARK: - Handle: Lifecycle
 
+@available(Android 29, *)
 internal extension Parcel.Handle {
 
     /**
@@ -633,6 +640,7 @@ internal extension Parcel.Handle {
 
 // MARK: - Handle: Position & Size
 
+@available(Android 29, *)
 internal extension Parcel.Handle {
 
     /**
@@ -706,6 +714,7 @@ internal extension Parcel.Handle {
 
 // MARK: - Handle: Scalar Writes
 
+@available(Android 29, *)
 internal extension Parcel.Handle {
 
     func writeInt32(_ value: Int32) -> Result<Void, AndroidBinderError> {
