@@ -65,7 +65,7 @@ jobs:
         with:
           api-level: ${{ matrix.android-api }}
           arch: x86_64
-          script: ANDROID_SDK_VERSION=${{ matrix.android-api }} ANDROID_NDK_VERSION=${{ matrix.android-ndk }}skip android test --apk --verbose
+          script: ANDROID_SDK_VERSION=${{ matrix.android-api }} ANDROID_NDK_VERSION=${{ matrix.android-ndk }} skip android test --apk --verbose
 
   soundness:
     uses: swiftlang/github-workflows/.github/workflows/soundness.yml@main
