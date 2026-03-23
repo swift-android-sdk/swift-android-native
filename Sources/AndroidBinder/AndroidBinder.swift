@@ -107,6 +107,7 @@ public final class AndroidBinder {
 
 // MARK: - Properties
 
+@available(Android 29, *)
 public extension AndroidBinder {
 
     /**
@@ -217,6 +218,7 @@ public extension AndroidBinder {
 
 // MARK: - Methods
 
+@available(Android 29, *)
 public extension AndroidBinder {
 
     /// Access the underlying opaque pointer.
@@ -373,6 +375,7 @@ public extension AndroidBinder {
 
 // MARK: - Supporting Types
 
+@available(Android 29, *)
 internal extension AndroidBinder {
 
     struct Handle {
@@ -385,6 +388,7 @@ internal extension AndroidBinder {
     }
 }
 
+@available(Android 29, *)
 internal extension AndroidBinder.Handle {
 
     /**
@@ -486,12 +490,12 @@ internal extension AndroidBinder.Handle {
         var cStrings = arguments.map { strdup($0) }
         defer { cStrings.forEach { free($0) } }
         var ptrs = cStrings.map { UnsafePointer($0) }
-        return ptrs.withUnsafeBufferPointer { buffer in
+        return ptrs.withUnsafeMutableBufferPointer { buffer in
             AIBinder_dump(pointer, destination.rawValue, buffer.baseAddress, UInt32(arguments.count)).mapError()
         }
     }
 
-    static func create(class binderClass: BinderClass, userData: UnsafeMutableRawPointer?) -> Handle? {
+    static func create(class binderClass: BinderClass, userData: UnsafeMutableRawPointer?) -> AndroidBinder.Handle? {
         AIBinder_new(binderClass.handle.pointer, userData).map { .init($0) }
     }
 
@@ -520,7 +524,7 @@ internal extension AndroidBinder.Handle {
     }
 
     @available(Android 31, *)
-    func isLess(than other: Handle) -> Bool {
+    func isLess(than other: AndroidBinder.Handle) -> Bool {
         AIBinder_lt(pointer, other.pointer)
     }
 
