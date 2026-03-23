@@ -234,6 +234,10 @@ if ndkBinder {
         dependencies: [
             "AndroidSystem",
             "CAndroidNDK",
+            .product(
+                name: "SwiftJavaJNICore",
+                package: "swift-java-jni-core"
+            ),
         ],
         swiftSettings: [
             ndkVersionDefine,
