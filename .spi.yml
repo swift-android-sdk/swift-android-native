@@ -4,8 +4,14 @@ metadata:
 builder:
   configs:
     - documentation_targets:
+        - 'AndroidNative'
         - 'AndroidContext'
-        - 'AndroidFileManager'
         - 'AndroidLogging'
-        - 'AndroidLooper'
         - 'AndroidChoreographer'
+        - 'AndroidManifest'
+        - 'AndroidInput'
+        - 'AndroidHardware'
+        # error: 'UnsafeRawBufferPointer' doesn't exist at '/AndroidFileManager/Asset/read(maxCount:_:)'
+        # - 'AndroidFileManager'
+        # error: 'body' doesn't exist at '/AndroidLooper/Looper/currentThread(_:)'
+        # - 'AndroidLooper'
