@@ -48,6 +48,7 @@ let package = Package(
         .visionOS(.v1),
     ],
     products: [
+        .library(name: "AndroidSystem", targets: ["AndroidSystem"]),
         .library(name: "AndroidNative", targets: ["AndroidNative"]),
         .library(name: "AndroidContext", targets: ["AndroidContext"]),
         .library(name: "AndroidFileManager", targets: ["AndroidFileManager"]),
