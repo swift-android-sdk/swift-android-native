@@ -192,7 +192,7 @@ public extension Configuration {
     @available(Android 30, *)
     var screenRound: ScreenRound {
         get { ScreenRound(rawValue: AConfiguration_getScreenRound(pointer)) ?? .any }
-        //set { AConfiguration_setScreenRound(pointer, newValue.rawValue) }
+        set { AConfiguration_setScreenRound(pointer, newValue.rawValue) }
     }
 
     /// UI mode type (car, desk, television, etc.).
