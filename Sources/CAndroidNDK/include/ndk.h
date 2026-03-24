@@ -90,7 +90,7 @@
 #ifdef __ANDROID__
 typedef binder_status_t (*AIBinder_handleShellCommand)(AIBinder* binder, int in, int out, int err,
                                                        const char** argv, uint32_t argc);
-__attribute__((availability(android, introduced=31)))
+__attribute__((weak)) __attribute__((availability(android, introduced=31)))
 void AIBinder_Class_setHandleShellCommand(AIBinder_Class* clazz,
                                           AIBinder_handleShellCommand handleShellCommand);
 #endif
