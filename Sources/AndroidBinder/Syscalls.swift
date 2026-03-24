@@ -121,6 +121,7 @@ func AIBinder_DeathRecipient_setOnUnlinked(
 func AParcel_delete(_ parcel: OpaquePointer) { stub() }
 @available(Android 31, *)
 func AParcel_create() -> OpaquePointer? { stub() }
+func AParcel_fromJavaParcel(_ environment: JNIEnvironment?, _ javaObject: jobject) -> OpaquePointer? { stub() }
 
 // Position and size
 func AParcel_setDataPosition(_ parcel: OpaquePointer, _ position: Int32) -> binder_status_t { stub() }

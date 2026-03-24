@@ -16,6 +16,7 @@
 import Android
 import CAndroidNDK
 #endif
+import SwiftJavaJNICore
 
 // MARK: - Parcel
 
@@ -61,6 +62,21 @@ public extension Parcel {
     @available(Android 31, *)
     init() {
         self.handle = .create()
+    }
+
+    /**
+     Converts an android.os.Parcel object into an AParcel* object.
+    
+     If the parcel is null, null is returned.
+    
+     Available since API level 30.
+     */
+    @available(Android 30, *)
+    static func fromJava(_ javaObject: jobject, environment: JNIEnvironment) -> Parcel? {
+        guard let pointer = AParcel_fromJavaParcel(environment, javaObject) else {
+            return nil
+        }
+        return Parcel(pointer)
     }
 }
 
