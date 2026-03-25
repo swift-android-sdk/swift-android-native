@@ -19,7 +19,7 @@ jobs:
         os: ['ubuntu-latest']
 
         # swift: ['nightly-6.3', 'nightly-main']
-        swift: ['nightly-6.3']
+        swift: ['6.3', 'nightly-6.3']
 
         # android-api: ['28', '36']
         # needs API 31 due to https://github.com/swiftlang/swift-java/issues/419
