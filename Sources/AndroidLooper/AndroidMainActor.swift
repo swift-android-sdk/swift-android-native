@@ -47,7 +47,7 @@ public extension AndroidMainActor {
     /// Setup the main looper,
     ///
     /// - Note: Make sure to call from main thread.
-    static func setupMainLooper() -> Bool {
+    public static func setupMainLooper() -> Bool {
 
         // release previous looper and executor
         executor = nil
