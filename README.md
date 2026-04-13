@@ -7,7 +7,7 @@ and utilities to integrate Swift Foundation with the Android environment.
 ## Requirements
 
 - Swift 6
-- [Swift Android Toolchain and SDK](https://github.com/skiptools/swift-android-toolchain)
+- [Swift Android Toolchain and SDK](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)
 
 ## Installation
 
@@ -17,7 +17,7 @@ Add the package to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/skiptools/swift-android-native.git", from: "1.0.0")
+    .package(url: "https://github.com/swift-android-sdk/swift-android-native.git", from: "1.5.0")
 ]
 ```
 
