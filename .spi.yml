@@ -4,14 +4,14 @@ metadata:
 builder:
   configs:
     - documentation_targets:
-        - 'AndroidNative'
-        - 'AndroidContext'
+        - 'AndroidSystem'
+        - 'AndroidLooper'
+        - 'AndroidFileManager'
+        - 'AndroidHardware'
         - 'AndroidLogging'
         - 'AndroidChoreographer'
+        - 'AndroidContext'
         - 'AndroidManifest'
         - 'AndroidInput'
-        - 'AndroidHardware'
-        # error: 'UnsafeRawBufferPointer' doesn't exist at '/AndroidFileManager/Asset/read(maxCount:_:)'
-        # - 'AndroidFileManager'
-        # error: 'body' doesn't exist at '/AndroidLooper/Looper/currentThread(_:)'
-        # - 'AndroidLooper'
+        # AndroidNative is excluded because its public API is entirely
+        # behind #if canImport(Android) and produces empty docs on macOS/Linux.
