@@ -19,6 +19,13 @@ import OSLog // note: on non-android platforms, this will just export the system
 import AndroidLogging
 #endif
 
+#if os(Android)
+let android = true
+#else
+let android = false
+#endif
+
+@Suite(.enabled(if: android))
 struct AndroidLoggingTests {
     @Test func testOSLogAPI() {
         //let emptyLogger = Logger()

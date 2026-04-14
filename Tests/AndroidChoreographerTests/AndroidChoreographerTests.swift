@@ -15,6 +15,13 @@
 import Testing
 import AndroidSystem
 
+#if os(Android)
+let android = true
+#else
+let android = false
+#endif
+
+@Suite(.enabled(if: android))
 struct AndroidChoreographerTests {
     @Test func testChoreographer() async throws {
     }
