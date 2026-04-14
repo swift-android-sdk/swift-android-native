@@ -73,4 +73,5 @@ jobs:
       # Not API stable package (yet)
       api_breakage_check_enabled: false
       format_check_enabled: true
-      docs_check_enabled: true
+      # error: 'swift-android-native': package 'swift-android-native' is using Swift tools version 6.3.0 but the installed version is 6.2.4
+      docs_check_enabled: false
