@@ -13,6 +13,6 @@ builder:
         - 'AndroidManifest'
         - 'AndroidInput'
         # doc check error in CI: error: '2266j' isn't a disambiguation for 'open(_:_:options:permissions:retryOnInterrupt:)' at '/AndroidSystem/FileDescriptor'
-        #- 'AndroidSystem'
+        # - 'AndroidSystem'
         # AndroidNative is excluded because its public API is entirely
         # behind #if canImport(Android) and produces empty docs on macOS/Linux.
