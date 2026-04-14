@@ -26,10 +26,6 @@ private struct RetryableError: Error {
 struct AndroidNativeTests {
     @Test(.disabled("temporarily disabled on Android due to hang"))
     func testNetwork() async throws {
-        #if os(Android)
-        try AndroidBootstrap.setupCACerts() // needed in order to use https
-        #endif
-
         /// https://www.swift.org/openapi/openapi.html#/Toolchains/listReleases
         struct SwiftReleasesResponse: Decodable {
             var name: String
