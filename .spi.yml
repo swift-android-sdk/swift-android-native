@@ -4,7 +4,6 @@ metadata:
 builder:
   configs:
     - documentation_targets:
-        - 'AndroidLooper'
         - 'AndroidFileManager'
         - 'AndroidHardware'
         - 'AndroidLogging'
@@ -12,6 +11,8 @@ builder:
         - 'AndroidContext'
         - 'AndroidManifest'
         - 'AndroidInput'
+        # doc check error in CI: error: 'body' doesn't exist at '/AndroidLooper/Looper/currentThread(_:)'
+        # - 'AndroidLooper'
         # doc check error in CI: error: '2266j' isn't a disambiguation for 'open(_:_:options:permissions:retryOnInterrupt:)' at '/AndroidSystem/FileDescriptor'
         # - 'AndroidSystem'
         # AndroidNative is excluded because its public API is entirely
