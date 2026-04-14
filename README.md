@@ -550,33 +550,6 @@ The top-level `AndroidNative` module re-exports the most commonly used
 submodules and adds `AndroidBootstrap`, a small collection of helpers for
 configuring Foundation and other Swift libraries to work correctly on Android.
 
-## Networking
-
-Foundation's `URLSession` cannot load "https" URLs out of the box on Android because it
-doesn't know where to look to find the local certificate authority files. Android stores
-CA certificates under [`/system/etc/security/cacerts`](https://source.android.com/docs/security/features/selinux/implement)
-and (on modern devices) under `/apex/com.android.conscrypt/cacerts`.
-
-In order to set up `URLSession` properly, first call `AndroidBootstrap.setupCACerts()`
-one time in order to build a PEM bundle from those directories and point
-libcurl-backed networking at it.
-
-For example:
-
-```swift
-import Foundation
-#if os(Android)
-import AndroidNative
-import FoundationNetworking
-#endif
-
-#if os(Android)
-try AndroidBootstrap.setupCACerts() // needed in order to use https
-#endif
-let url = URL(string: "https://httpbin.org/get?x=1")!
-let (data, response) = try await URLSession.shared.data(from: url)
-```
-
 # License
 
 Licensed under the Apache 2.0 license with a runtime library exception,
