@@ -15,6 +15,13 @@
 import Testing
 import AndroidFileManager
 
+#if os(Android)
+let android = true
+#else
+let android = false
+#endif
+
+@Suite(.enabled(if: android))
 struct AndroidConfigurationTests {
 
     @Test func testProperties() throws {

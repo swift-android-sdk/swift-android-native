@@ -23,6 +23,13 @@ private struct RetryableError: Error {
     let message: String
 }
 
+#if os(Android)
+let android = true
+#else
+let android = false
+#endif
+
+@Suite(.enabled(if: android))
 struct AndroidNativeTests {
     @Test(.disabled("temporarily disabled on Android due to hang"))
     func testNetwork() async throws {

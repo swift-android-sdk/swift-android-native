@@ -15,11 +15,16 @@
 import Testing
 import AndroidLooper
 
+#if os(Android)
+let android = true
+#else
+let android = false
+#endif
+
+@Suite(.enabled(if: android))
 struct AndroidLooperTests {
     init() {
-        #if os(Android)
         //AndroidLooper_initialize(nil)
-        #endif
     }
 
     @Test func testLooper() async throws {
