@@ -17,7 +17,17 @@ Add the package to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-android-sdk/swift-android-native.git", from: "1.5.0")
+    .package(url: "https://github.com/swift-android-sdk/swift-android-native.git", from: "2.0.0")
+]
+```
+
+And for each target that uses one of the modules, add a dependency to the appropriate module, optionally adding a platform conditional so the dependency is activated only for Android builds:
+
+```swift
+targets: [
+    .target(name: "MyTarget", dependencies: [
+        .product(name: "AndroidNative", package: "swift-android-native", condition: .when(platforms: [.android]))
+    ])
 ]
 ```
 
@@ -549,6 +559,28 @@ of it.
 The top-level `AndroidNative` module re-exports the most commonly used
 submodules and adds `AndroidBootstrap`, a small collection of helpers for
 configuring Foundation and other Swift libraries to work correctly on Android.
+
+# Development
+
+Install and configure the Swift SDK for Android,
+either using the Getting Started guide at
+[https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html),
+or by setting it up with [`skip`](https://skip.dev),
+which will automatically install the prerequisite Android SDK and NDK:
+
+```shell
+$ brew install skiptools/skip/skip
+$ skip android sdk install --version 6.3.1
+$ skip android build
+```
+
+The test cases can be run against an Android device or
+[emulator](https://developer.android.com/studio/run/emulator#get-started)
+with:
+
+```shell
+$ skip android test --apk
+```
 
 # License
 
