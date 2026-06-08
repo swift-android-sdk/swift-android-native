@@ -224,7 +224,11 @@ let package = Package(
 if android {
     // add compatibility import from OSLog to AndroidLogging
     package.targets += [.target(name: "OSLog", dependencies: ["AndroidLogging"])]
-    package.targets.first(where: { $0.name == "AndroidLoggingTests" })?.dependencies += [.target(name: "OSLog")]
+    // Any test that uses `#if canImport(OSLog) / import OSLog` must declare
+    // OSLog as a dependency on Android so the test runner links against it.
+    for testName in ["AndroidLoggingTests", "AndroidContextTests", "AndroidHardwareTests"] {
+        package.targets.first(where: { $0.name == testName })?.dependencies += [.target(name: "OSLog")]
+    }
 }
 
 if ndkBinder {
