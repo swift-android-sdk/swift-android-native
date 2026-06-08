@@ -18,8 +18,7 @@ jobs:
         # os: ['macos-15-intel', 'ubuntu-latest']
         os: ['ubuntu-latest']
 
-        # swift: ['nightly-6.3', 'nightly-main']
-        #swift: ['6.3.2', 'nightly-6.4', 'nightly-main']
+        # swift: ['6.3.2', 'nightly-6.4', 'nightly-main']
         swift: ['6.3.2', 'nightly-main']
 
         # android-api: ['28', '36']
