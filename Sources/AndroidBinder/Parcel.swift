@@ -66,9 +66,9 @@ public extension Parcel {
 
     /**
      Converts an android.os.Parcel object into an AParcel* object.
-    
+
      If the parcel is null, null is returned.
-    
+
      Available since API level 30.
      */
     @available(Android 30, *)

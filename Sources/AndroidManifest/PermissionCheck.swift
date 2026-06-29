@@ -37,14 +37,14 @@ public extension Permission {
 
         /**
          This is returned if the permission check encountered an unspecified error.
-        
+
          The output result is unmodified.
          */
         case unknown = -1
 
         /**
          This is returned if the permission check failed because the service is unavailable.
-        
+
          The output result is unmodified.
          */
         case serviceUnavailable = -2

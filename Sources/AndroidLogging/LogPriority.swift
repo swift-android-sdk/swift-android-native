@@ -21,7 +21,7 @@ public enum LogPriority: Equatable, Hashable, CaseIterable, Sendable {
 
     /**
      Debug logging.
-    
+
      Should typically be disabled for a release apk.
      */
     case debug
@@ -33,21 +33,21 @@ public enum LogPriority: Equatable, Hashable, CaseIterable, Sendable {
 
     /**
      Error logging.
-    
+
      For use with unrecoverable failures.
      */
     case error
 
     /**
      Fatal logging.
-    
+
      For use when aborting.
      */
     case fatal
 
     /**
      Informational logging.
-    
+
      Should typically be disabled for a release apk.
      */
     case info
@@ -64,14 +64,14 @@ public enum LogPriority: Equatable, Hashable, CaseIterable, Sendable {
 
     /**
      Verbose logging.
-    
+
      Should typically be disabled for a release apk.
      */
     case verbose
 
     /**
      Warning logging.
-    
+
      For use with recoverable failures.
      */
     case warning
