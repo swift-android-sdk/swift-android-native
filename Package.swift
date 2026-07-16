@@ -18,6 +18,12 @@ import class Foundation.ProcessInfo
 
 let android = Context.environment["TARGET_OS_ANDROID"] ?? "0" != "0"
 
+// Set the `SWIFT_BUILD_DYNAMIC_LIBRARY` environment variable to build all
+// library products as dynamic libraries instead of the default automatic
+// (static) linking.
+let dynamicLibrary = Context.environment["SWIFT_BUILD_DYNAMIC_LIBRARY"] == "1"
+let libraryType: Product.Library.LibraryType? = dynamicLibrary ? .dynamic : nil
+
 // Override JNI package
 let swiftJavaJNICoreDep: Package.Dependency
 if let localPath = Context.environment["SWIFT_JAVA_JNI_CORE_PATH"] {
@@ -48,16 +54,16 @@ let package = Package(
         .visionOS(.v1),
     ],
     products: [
-        .library(name: "AndroidSystem", targets: ["AndroidSystem"]),
-        .library(name: "AndroidNative", targets: ["AndroidNative"]),
-        .library(name: "AndroidContext", targets: ["AndroidContext"]),
-        .library(name: "AndroidFileManager", targets: ["AndroidFileManager"]),
-        .library(name: "AndroidLogging", targets: ["AndroidLogging"]),
-        .library(name: "AndroidLooper", targets: ["AndroidLooper"]),
-        .library(name: "AndroidChoreographer", targets: ["AndroidChoreographer"]),
-        .library(name: "AndroidManifest", targets: ["AndroidManifest"]),
-        .library(name: "AndroidInput", targets: ["AndroidInput"]),
-        .library(name: "AndroidHardware", targets: ["AndroidHardware"]),
+        .library(name: "AndroidSystem", type: libraryType, targets: ["AndroidSystem"]),
+        .library(name: "AndroidNative", type: libraryType, targets: ["AndroidNative"]),
+        .library(name: "AndroidContext", type: libraryType, targets: ["AndroidContext"]),
+        .library(name: "AndroidFileManager", type: libraryType, targets: ["AndroidFileManager"]),
+        .library(name: "AndroidLogging", type: libraryType, targets: ["AndroidLogging"]),
+        .library(name: "AndroidLooper", type: libraryType, targets: ["AndroidLooper"]),
+        .library(name: "AndroidChoreographer", type: libraryType, targets: ["AndroidChoreographer"]),
+        .library(name: "AndroidManifest", type: libraryType, targets: ["AndroidManifest"]),
+        .library(name: "AndroidInput", type: libraryType, targets: ["AndroidInput"]),
+        .library(name: "AndroidHardware", type: libraryType, targets: ["AndroidHardware"]),
     ],
     dependencies: [
         swiftJavaJNICoreDep
@@ -256,6 +262,7 @@ if ndkBinder {
     // Add the binder product
     let binderProduct = Product.library(
         name: "AndroidBinder",
+        type: libraryType,
         targets: ["AndroidBinder"]
     )
     package.products.append(binderProduct)
