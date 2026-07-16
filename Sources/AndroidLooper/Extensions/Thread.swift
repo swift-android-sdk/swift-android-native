@@ -12,7 +12,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if canImport(Foundation)
+// `Thread` requires the full `Foundation` module (not available via
+// `FoundationEssentials` alone), so this convenience wrapper is gated by the
+// same "CoreFoundation" trait as the rest of this module's Foundation usage.
+#if canImport(Foundation) && CoreFoundation
 import Foundation
 
 public extension Thread {

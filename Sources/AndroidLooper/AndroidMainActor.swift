@@ -18,7 +18,9 @@ import CAndroidNDK
 #endif
 
 import AndroidSystem
+#if CoreFoundation
 import CoreFoundation
+#endif
 import Dispatch
 
 @available(macOS 13.0, *)
@@ -106,6 +108,7 @@ private extension AndroidMainActor {
         didInstallGlobalExecutor = true
 
         let looperCallback: Looper.Handle.Callback = { ft, event, data in
+            #if CoreFoundation
             while true {
                 switch CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true) {
                 case CFRunLoopRunResult.handledSource:
@@ -120,9 +123,19 @@ private extension AndroidMainActor {
                     break
                 }
             }
+            #else
+            // Drain the dispatch main queue directly — the same primitive
+            // CoreFoundation's CFRunLoop calls internally when its main-queue
+            // port fires — instead of routing through CFRunLoopRunInMode,
+            // which requires linking all of Foundation on Android.
+            _dispatch_main_queue_callback_4CF()
+            return 1 // continue listening for events
+            #endif
         }
 
-        let mainLoop = CFRunLoopGetMain() // initialize main loop
+        #if CoreFoundation
+        _ = CFRunLoopGetMain() // initialize main loop
+        #endif
         let dispatchPort = _dispatch_get_main_queue_port_4CF()
         let fileDescriptor = FileDescriptor(rawValue: dispatchPort)
 
@@ -136,7 +149,6 @@ private extension AndroidMainActor {
 
         // install executor
         self.executor = executor
-        _ = mainLoop
         return true
     }
 }

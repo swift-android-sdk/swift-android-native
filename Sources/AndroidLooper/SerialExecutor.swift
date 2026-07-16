@@ -17,7 +17,9 @@ import Android
 import CAndroidNDK
 #endif
 
+#if CoreFoundation
 import CoreFoundation
+#endif
 import Dispatch
 import AndroidSystem
 
@@ -117,9 +119,17 @@ internal extension Looper.Executor {
             }
         }
 
+        #if CoreFoundation
         while CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true) == CFRunLoopRunResult.handledSource {
             // continue handling queued events without a timeout
         }
+        #else
+        // Drain the dispatch main queue directly — the same primitive
+        // CoreFoundation's CFRunLoop calls internally when its main-queue
+        // port fires — instead of routing through CFRunLoopRunInMode, which
+        // requires linking all of Foundation on Android.
+        _dispatch_main_queue_callback_4CF()
+        #endif
     }
 
     /// Dequeue a single job
