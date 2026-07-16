@@ -13,10 +13,9 @@
 //===----------------------------------------------------------------------===//
 
 // `Thread` requires the full `Foundation` module (not available via
-// `FoundationEssentials` alone), and this convenience wrapper isn't called
-// anywhere reachable — excluded on Android to avoid linking all of
-// Foundation for it.
-#if canImport(Foundation) && !os(Android)
+// `FoundationEssentials` alone), so this convenience wrapper is gated by the
+// same "CoreFoundation" trait as the rest of this module's Foundation usage.
+#if canImport(Foundation) && CoreFoundation
 import Foundation
 
 public extension Thread {
