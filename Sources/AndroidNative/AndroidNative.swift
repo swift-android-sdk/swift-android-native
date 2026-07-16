@@ -20,11 +20,6 @@
 
 #if canImport(Android)
 import Android
-#if canImport(FoundationEssentials)
-import FoundationEssentials
-#else
-import Foundation
-#endif
 
 /// Utilities for setting up Android compatibility with Foundation
 public class AndroidBootstrap {
