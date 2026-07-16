@@ -66,7 +66,7 @@ let package = Package(
     // Android. Enable it to opt back into the CoreFoundation-based drain.
     traits: [
         "CoreFoundation",
-        .default(enabledTraits: [])
+        .default(enabledTraits: []),
     ],
     dependencies: [
         swiftJavaJNICoreDep
