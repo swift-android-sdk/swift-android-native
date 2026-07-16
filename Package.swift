@@ -59,6 +59,15 @@ let package = Package(
         .library(name: "AndroidInput", targets: ["AndroidInput"]),
         .library(name: "AndroidHardware", targets: ["AndroidHardware"]),
     ],
+    // "CoreFoundation" gates `AndroidLooper`'s use of `CFRunLoopRunInMode` to
+    // drain the dispatch main queue. Off by default: draining goes straight
+    // through `_dispatch_main_queue_callback_4CF()` (the same primitive
+    // CFRunLoop calls internally), which avoids linking all of Foundation on
+    // Android. Enable it to opt back into the CoreFoundation-based drain.
+    traits: [
+        "CoreFoundation",
+        .default(enabledTraits: [])
+    ],
     dependencies: [
         swiftJavaJNICoreDep
     ],
