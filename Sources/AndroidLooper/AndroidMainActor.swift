@@ -128,6 +128,11 @@ private extension AndroidMainActor {
             // CoreFoundation's CFRunLoop calls internally when its main-queue
             // port fires — instead of routing through CFRunLoopRunInMode,
             // which requires linking all of Foundation on Android.
+            // Read the eventfd first, as CFRunLoop does: the Looper polls it
+            // level-triggered, so an unread eventfd calls back again at once.
+            #if os(Android)
+            _ = try? SocketDescriptor.Event(rawValue: ft).read()
+            #endif
             _dispatch_main_queue_callback_4CF()
             return 1 // continue listening for events
             #endif
